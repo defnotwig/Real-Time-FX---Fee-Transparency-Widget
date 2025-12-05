@@ -13,39 +13,8 @@
       rel="stylesheet"
     />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: [
-                "Inter",
-                "system-ui",
-                "-apple-system",
-                "BlinkMacSystemFont",
-                "Segoe UI",
-                "Roboto",
-                "sans-serif",
-              ],
-              mono: ["SF Mono", "Monaco", "Consolas", "monospace"],
-            },
-            colors: {
-              // Ripe brand colors
-              ripe: {
-                teal: "#00d4aa",
-                purple: "#7c3aed",
-                pink: "#f472b6",
-                dark: "#0f0f1a",
-                navy: "#1a1a2e",
-              },
-            },
-          },
-        },
-      };
-    </script>
+    <!-- Custom CSS (converted from Tailwind) -->
+    <link rel="stylesheet" href="styles.css" />
 
     <!-- React & ReactDOM CDN -->
     <script
@@ -59,132 +28,12 @@
 
     <!-- Babel Standalone for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        /* Ripe-inspired dark gradient - modern fintech aesthetic */
-        background: linear-gradient(
-          135deg,
-          #0f0f1a 0%,
-          #1a1a2e 50%,
-          #16213e 100%
-        );
-        min-height: 100vh;
-        padding: 16px;
-        margin: 0;
-      }
-
-      .demo-container {
-        max-width: 700px;
-        margin: 0 auto;
-      }
-
-      .loading {
-        text-align: center;
-        color: #a5b4fc;
-        padding: 40px;
-        font-size: 1rem;
-      }
-
-      .loading::after {
-        content: "";
-        animation: dots 1.5s infinite;
-      }
-
-      @keyframes dots {
-        0%,
-        20% {
-          content: ".";
-        }
-        40% {
-          content: "..";
-        }
-        60%,
-        100% {
-          content: "...";
-        }
-      }
-
-      /* Subtle animated background pattern */
-      body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(
-            circle at 20% 80%,
-            rgba(0, 212, 170, 0.05) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 80% 20%,
-            rgba(124, 58, 237, 0.05) 0%,
-            transparent 50%
-          );
-        pointer-events: none;
-        z-index: -1;
-      }
-
-      /* Ensure smooth scrolling */
-      html {
-        scroll-behavior: smooth;
-      }
-
-      /* Custom scrollbar for webkit browsers */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-
-      ::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        background: rgba(0, 212, 170, 0.4);
-        border-radius: 4px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(0, 212, 170, 0.6);
-      }
-    </style>
   </head>
   <body>
     <div class="demo-container">
       <div id="root">
         <div class="loading">
           <p>Loading widget</p>
-        </div>
-      </div>
-
-      <!-- Trust badges section -->
-      <div style="text-align: center; margin-top: 24px; padding: 16px">
-        <p style="color: #6b7280; font-size: 12px; margin-bottom: 12px">
-          Trusted by leading wallets and issuers
-        </p>
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            flex-wrap: wrap;
-            opacity: 0.6;
-          "
-        >
-          <span style="color: #a5b4fc; font-weight: 500">Phantom</span>
-          <span style="color: #a5b4fc; font-weight: 500">MetaMask</span>
-          <span style="color: #a5b4fc; font-weight: 500">Tether</span>
-          <span style="color: #a5b4fc; font-weight: 500">Solana</span>
         </div>
       </div>
     </div>
@@ -962,7 +811,7 @@
             }`}
             style={activeStyle}
           >
-            <div className="flex flex-col items-center gap-1">
+            <div className={`flex flex-col items-center gap-1 ${isDark ? "text-white" : "text-black"}`}>
               <span className="text-lg">
                 {config.flag} {config.symbol}
               </span>
@@ -982,8 +831,8 @@
             }
           : {};
         const inactiveClass = isDark
-          ? "bg-gray-700/50 text-gray-200 hover:bg-gray-600 border border-gray-600"
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200";
+          ? "bg-gray-700/50 text-white hover:bg-gray-600 border border-gray-600"
+          : "bg-gray-100 textwhite hover:bg-gray-200 border border-gray-200";
 
         return (
           <button
@@ -1017,7 +866,7 @@
             }
           : {};
         const inactiveClass = isDark
-          ? "bg-gray-700/50 text-gray-200 hover:bg-gray-600 border border-gray-600"
+          ? "bg-gray-700/50 text-white hover:bg-gray-600 border border-gray-600"
           : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200";
 
         return (
@@ -1093,6 +942,7 @@
         defaultAmount = 100,
         defaultStablecoin = "USDC",
         theme: initialTheme = "light",
+        onThemeChange,
         showComparison = true,
         showDirectionToggle = true,
         showStablecoinSelector = true,
@@ -1212,8 +1062,12 @@
         );
 
         const toggleTheme = useCallback(() => {
-          setTheme((prev) => (prev === "light" ? "dark" : "light"));
-        }, []);
+          const newTheme = theme === "light" ? "dark" : "light";
+          setTheme(newTheme);
+          if (onThemeChange) {
+            onThemeChange(newTheme);
+          }
+        }, [theme, onThemeChange]);
 
         const toggleDetails = useCallback(() => {
           setShowDetails((prev) => !prev);
@@ -1259,8 +1113,8 @@
         const inputSuffix = direction === "send" ? stablecoin : currency;
 
         return (
-          <div
-            className={`w-full max-w-2xl mx-auto p-4 sm:p-6 rounded-2xl shadow-xl ${bgClass} ${textClass} transition-colors duration-200 border ${borderClass}`}
+          <main
+            className={`p-4 sm:p-6 ${bgClass} ${textClass} transition-colors duration-200 border ${borderClass}`}
             role="region"
             aria-label="FX Conversion Calculator"
           >
@@ -1307,7 +1161,7 @@
                         ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                         : isStale
                         ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                        : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                        : "bg-green-100 text-green-700 bg-gray-100 dark:text-green-400"
                     }`}
                   >
                     <span
@@ -1327,7 +1181,7 @@
                       ? "Cached"
                       : isStale
                       ? "Stale"
-                      : "Live"}
+                      : " Live"}
                   </div>
                   {/* Source badge */}
                   {!ratesLoading && !ratesError && (
@@ -1654,14 +1508,13 @@
                     <div
                       className={`p-4 rounded-xl border-2 ${borderClass} ${cardBgClass} opacity-75`}
                     >
-                      <div className="text-center mb-3">
+                      <div className="flex justify-between text-center mb-3">
                         <p
-                          className={`text-sm ${mutedTextClass} mb-1 flex items-center justify-center gap-1`}
+                          className={`text-sm ${mutedTextClass} flex items-center justify-center gap-1`}
                         >
-                          <span className="inline-block w-2 h-2 bg-red-500 rounded-full"></span>
                           Traditional Bank
                         </p>
-                        <p className="text-xl font-bold text-red-600 tabular-nums font-mono">
+                        <p className="text-sm font-bold text-red-600 tabular-nums font-mono">
                           {formatCurrency(
                             legacyConversion.netFiatReceived,
                             currency
@@ -1693,16 +1546,15 @@
                         border: "2px solid #00d4aa",
                       }}
                     >
-                      <div className="text-center mb-3">
+                      <div className="flex justify-between text-center mb-3">
                         <p
-                          className="text-sm mb-1 flex items-center justify-center gap-1"
+                          className="text-sm flex items-center justify-center gap-1"
                           style={{ color: "#00d4aa" }}
                         >
-                          <Check className="w-4 h-4" />
                           Ripe
                         </p>
                         <p
-                          className="text-xl font-bold tabular-nums font-mono"
+                          className="text-sm font-bold tabular-nums font-mono"
                           style={{ color: "#00d4aa" }}
                         >
                           {formatCurrency(
@@ -1952,7 +1804,7 @@
                 — From stablecoin to e-wallet
               </p>
             </div>
-          </div>
+          </main>
         );
       };
 
@@ -1961,22 +1813,68 @@
       // ============================================================================
 
       const App = () => {
+        const [theme, setTheme] = React.useState("dark");
+        
         const handleConversionComplete = (result) => {
           console.log("Conversion result:", result);
         };
 
+        const handleThemeChange = (newTheme) => {
+          setTheme(newTheme);
+        };
+
         return (
-          <FXWidget
-            defaultCurrency="PHP"
-            defaultAmount={100}
-            defaultStablecoin="USDC"
-            theme="dark"
-            showComparison={true}
-            showDirectionToggle={true}
-            showStablecoinSelector={true}
-            brandColor="#00d4aa"
-            onConversionComplete={handleConversionComplete}
-          />
+          <>
+            <FXWidget
+              defaultCurrency="PHP"
+              defaultAmount={100}
+              defaultStablecoin="USDC"
+              theme={theme}
+              onThemeChange={handleThemeChange}
+              showComparison={true}
+              showDirectionToggle={true}
+              showStablecoinSelector={true}
+              brandColor="#00d4aa"
+              onConversionComplete={handleConversionComplete}
+            />
+            <div style={{
+              textAlign: "center",
+              padding: "16px",
+              backgroundColor: theme === "dark" ? "#111827" : "#f9fafb"
+            }}>
+              <p style={{
+                color: theme === "dark" ? "#6b7280" : "#4b5563",
+                fontSize: "12px",
+                marginBottom: "12px"
+              }}>
+                Trusted by leading wallets and issuers
+              </p>
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "24px",
+                flexWrap: "wrap",
+                opacity: 0.6
+              }}>
+                <span style={{
+                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                  fontWeight: 500
+                }}>Phantom</span>
+                <span style={{
+                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                  fontWeight: 500
+                }}>MetaMask</span>
+                <span style={{
+                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                  fontWeight: 500
+                }}>Tether</span>
+                <span style={{
+                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                  fontWeight: 500
+                }}>Solana</span>
+              </div>
+            </div>
+          </>
         );
       };
 

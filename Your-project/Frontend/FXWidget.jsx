@@ -657,7 +657,7 @@ const PresetButton = ({ amount, isSelected, onClick, isDark }) => {
  * Allows selection between USDC, USDT, and USDG
  */
 const StablecoinButton = ({ code, config, isSelected, onClick, isDark }) => {
-  const baseClass = `px-3 py-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm min-h-[44px] flex items-center gap-2`;
+  const baseClass = `px-3 py-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm text-white min-h-[44px] flex items-center gap-2`;
   const activeStyle = isSelected 
     ? { background: `linear-gradient(135deg, ${config.color} 0%, ${config.color}dd 100%)`, boxShadow: `0 4px 14px ${config.color}40` }
     : {};
@@ -905,7 +905,7 @@ const FXWidget = ({
                   ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                   : isStale
                     ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                    : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-green-100 text-green-700 bg-gray-100 dark:text-green-400'
             }`}>
               <span className={`w-2 h-2 rounded-full ${
                 ratesLoading 
@@ -1167,7 +1167,7 @@ const FXWidget = ({
             
             {/* Legacy Provider */}
             <div className={`p-4 rounded-xl border-2 ${borderClass} ${cardBgClass} opacity-75`}>
-              <div className="text-center mb-3">
+              <div className="flex text-center mb-3">
                 <p className={`text-sm ${mutedTextClass} mb-1 flex items-center justify-center gap-1`}>
                   <span className="inline-block w-2 h-2 bg-red-500 rounded-full"></span>
                   Traditional Bank
@@ -1194,7 +1194,7 @@ const FXWidget = ({
             
             {/* Ripe */}
             <div className="p-4 rounded-xl relative overflow-hidden" style={{ background: isDark ? 'linear-gradient(135deg, rgba(0,212,170,0.15) 0%, rgba(124,58,237,0.15) 100%)' : 'linear-gradient(135deg, rgba(0,212,170,0.1) 0%, rgba(124,58,237,0.1) 100%)', border: '2px solid #00d4aa' }}>
-              <div className="text-center mb-3">
+              <div className="flex text-center mb-3">
                 <p className="text-sm mb-1 flex items-center justify-center gap-1" style={{ color: '#00d4aa' }}>
                   <Check className="w-4 h-4" />
                   Ripe
