@@ -1,0 +1,18 @@
+{
+    "grossFiat": 5877.3150000000005,
+    "transactionFee": 0.5,
+    "transactionFeeInFiat": 29.386575,
+    "networkFee": 29.386575,
+    "fxSpread": 17.685000000000173,
+    "fxSpreadPercent": 0.30000000000000293,
+    "netFiatReceived": 5818.54185,
+    "effectiveRate": 58.1854185,
+    "totalFeesInFiat": 58.77315,
+    "totalFeesPercent": 0.9999999999999999,
+    "customerRate": 58.77315,
+    "interbankRate": 58.95,
+    "direction": "send",
+    "currency": "PHP",
+    "stablecoin": "USDC",
+    "inputAmount": 100
+}

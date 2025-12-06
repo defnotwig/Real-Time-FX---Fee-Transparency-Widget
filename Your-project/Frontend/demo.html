@@ -1,1796 +1,1150 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ripe FX Widget - Real-Time Fee Transparency Demo</title>
 
-    <!-- Inter Font - Ripe's brand typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ripe FX Widget - Real-Time Fee Transparency Demo</title>
 
-    <!-- Custom CSS (converted from Tailwind) -->
-    <link rel="stylesheet" href="styles.css" />
+  <!-- Inter Font - Ripe's brand typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- React & ReactDOM CDN -->
-    <script
-      crossorigin
-      src="https://unpkg.com/react@18/umd/react.production.min.js"
-    ></script>
-    <script
-      crossorigin
-      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
-    ></script>
+  <!-- Custom CSS (converted from Tailwind) -->
+  <link rel="stylesheet" href="styles.css" />
 
-    <!-- Babel Standalone for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  </head>
-  <body>
-    <div class="demo-container">
-      <div id="root">
-        <div class="loading">
-          <p>Loading widget</p>
-        </div>
+  <!-- React & ReactDOM CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+  <div class="demo-container">
+    <div id="root">
+      <div class="loading">
+        <p>Loading widget</p>
       </div>
     </div>
+  </div>
 
-    <script type="text/babel">
-      // ============================================================================
-      // RIPE FX WIDGET - COMPLETE SELF-CONTAINED COMPONENT
-      // ============================================================================
+  <script type="text/babel">
+    // ============================================================================
+    // RIPE FX WIDGET - COMPLETE SELF-CONTAINED COMPONENT
+    // ============================================================================
 
-      const { useState, useMemo, useCallback, useEffect } = React;
+    const { useState, useMemo, useCallback, useEffect } = React;
 
-      // ============================================================================
-      // ICON COMPONENTS (inline SVG for zero dependencies)
-      // ============================================================================
+    // ============================================================================
+    // ICON COMPONENTS (inline SVG for zero dependencies)
+    // ============================================================================
 
-      const Icon = ({ children, className = "w-5 h-5" }) => (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {children}
-        </svg>
-      );
+    const Icon = ({ children, className = "w-5 h-5" }) => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {children}
+      </svg>
+    );
 
-      const ArrowRight = ({ className }) => (
-        <Icon className={className}>
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </Icon>
-      );
+    const ArrowRight = ({ className }) => (
+      <Icon className={className}>
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </Icon>
+    );
 
-      const ArrowDown = ({ className }) => (
-        <Icon className={className}>
-          <path d="M12 5v14M19 12l-7 7-7-7" />
-        </Icon>
-      );
+    const ArrowDown = ({ className }) => (
+      <Icon className={className}>
+        <path d="M12 5v14M19 12l-7 7-7-7" />
+      </Icon>
+    );
 
-      const Sun = ({ className }) => (
-        <Icon className={className}>
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-        </Icon>
-      );
+    const Sun = ({ className }) => (
+      <Icon className={className}>
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+      </Icon>
+    );
 
-      const Moon = ({ className }) => (
-        <Icon className={className}>
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-        </Icon>
-      );
+    const Moon = ({ className }) => (
+      <Icon className={className}>
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+      </Icon>
+    );
 
-      const ChevronDown = ({ className }) => (
-        <Icon className={className}>
-          <path d="m6 9 6 6 6-6" />
-        </Icon>
-      );
+    const ChevronDown = ({ className }) => (
+      <Icon className={className}>
+        <path d="m6 9 6 6 6-6" />
+      </Icon>
+    );
 
-      const ChevronUp = ({ className }) => (
-        <Icon className={className}>
-          <path d="m18 15-6-6-6 6" />
-        </Icon>
-      );
+    const ChevronUp = ({ className }) => (
+      <Icon className={className}>
+        <path d="m18 15-6-6-6 6" />
+      </Icon>
+    );
 
-      const TrendingDown = ({ className }) => (
-        <Icon className={className}>
-          <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" />
-          <polyline points="16 17 22 17 22 11" />
-        </Icon>
-      );
+    const TrendingDown = ({ className }) => (
+      <Icon className={className}>
+        <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" />
+        <polyline points="16 17 22 17 22 11" />
+      </Icon>
+    );
 
-      const Info = ({ className }) => (
-        <Icon className={className}>
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4M12 8h.01" />
-        </Icon>
-      );
+    const TrendingUp = ({ className }) => (
+      <Icon className={className}>
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+        <polyline points="16 7 22 7 22 13" />
+      </Icon>
+    );
 
-      const AlertCircle = ({ className }) => (
-        <Icon className={className}>
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 8v4M12 16h.01" />
-        </Icon>
-      );
+    const Info = ({ className }) => (
+      <Icon className={className}>
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4M12 8h.01" />
+      </Icon>
+    );
 
-      const Check = ({ className }) => (
-        <Icon className={className}>
-          <polyline points="20 6 9 17 4 12" />
-        </Icon>
-      );
+    const AlertCircle = ({ className }) => (
+      <Icon className={className}>
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 8v4M12 16h.01" />
+      </Icon>
+    );
 
-      const Shield = ({ className }) => (
-        <Icon className={className}>
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </Icon>
-      );
+    const Check = ({ className }) => (
+      <Icon className={className}>
+        <polyline points="20 6 9 17 4 12" />
+      </Icon>
+    );
 
-      const RefreshCw = ({ className }) => (
-        <Icon className={className}>
-          <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />
-        </Icon>
-      );
+    const Shield = ({ className }) => (
+      <Icon className={className}>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </Icon>
+    );
 
-      const Zap = ({ className }) => (
-        <Icon className={className}>
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </Icon>
-      );
+    const RefreshCw = ({ className }) => (
+      <Icon className={className}>
+        <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />
+      </Icon>
+    );
 
-      // ============================================================================
-      // CONSTANTS & CONFIGURATION
-      // ============================================================================
+    const Zap = ({ className }) => (
+      <Icon className={className}>
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      </Icon>
+    );
 
-      // Default/fallback FX rates (used when API is unavailable)
-      const DEFAULT_FX_RATES = {
-        PHP: {
-          interbank: 59.0,
-          customer: 58.5,
-          symbol: "₱",
-          name: "Philippine Peso",
-          decimals: 2,
-          flag: "🇵🇭",
+    // ============================================================================
+    // CONSTANTS & CONFIGURATION
+    // ============================================================================
+
+    // Default/fallback FX rates (used when API is unavailable)
+    const DEFAULT_FX_RATES = {
+      PHP: {
+        interbank: 59.0,
+        customer: 58.5,
+        symbol: "₱",
+        name: "Philippine Peso",
+        decimals: 2,
+        flag: "🇵🇭",
+      },
+      THB: {
+        interbank: 35.5,
+        customer: 35.2,
+        symbol: "฿",
+        name: "Thai Baht",
+        decimals: 2,
+        flag: "🇹🇭",
+      },
+      IDR: {
+        interbank: 15800,
+        customer: 15650,
+        symbol: "Rp",
+        name: "Indonesian Rupiah",
+        decimals: 0,
+        flag: "🇮🇩",
+      },
+      MYR: {
+        interbank: 4.65,
+        customer: 4.6,
+        symbol: "RM",
+        name: "Malaysian Ringgit",
+        decimals: 2,
+        flag: "🇲🇾",
+      },
+    };
+
+    // Live FX rates - will be updated from API
+    let FX_RATES = { ...DEFAULT_FX_RATES };
+
+    // Currency metadata (symbols, decimals, flags)
+    const CURRENCY_META = {
+      PHP: { symbol: "₱", name: "Philippine Peso", decimals: 2, flag: "🇵🇭" },
+      THB: { symbol: "฿", name: "Thai Baht", decimals: 2, flag: "🇹🇭" },
+      IDR: {
+        symbol: "Rp",
+        name: "Indonesian Rupiah",
+        decimals: 0,
+        flag: "🇮🇩",
+      },
+      MYR: {
+        symbol: "RM",
+        name: "Malaysian Ringgit",
+        decimals: 2,
+        flag: "🇲🇾",
+      },
+    };
+
+    const FEES = {
+      transactionFeePercent: 0.5,
+      networkFeeUSD: 0.5, // Reduced - modern stablecoin transfers are cheap
+      minimumFee: 0.1,
+    };
+
+    const LEGACY_FEES = {
+      transactionFeePercent: 3.0,
+      networkFeeUSD: 5.0,
+      fxSpreadPercent: 2.5,
+    };
+
+    const PRESET_AMOUNTS = [10, 50, 100, 500, 1000];
+
+    // Supported stablecoins (per Ripe's partnerships)
+    const STABLECOINS = {
+      USDC: {
+        name: "USD Coin",
+        symbol: "USDC",
+        color: "#2775CA",
+        description: "Circle's regulated stablecoin",
+        icon: "$",
+      },
+      USDT: {
+        name: "Tether USD",
+        symbol: "USDT",
+        color: "#26A17B",
+        description: "World's largest stablecoin",
+        icon: "₮",
+      },
+      USDG: {
+        name: "Global Dollar",
+        symbol: "USDG",
+        color: "#6366F1",
+        description: "Paxos-issued stablecoin",
+        icon: "G",
+      },
+    };
+
+    const INPUT_LIMITS = {
+      maxAmount: 1000000,
+      minAmount: 0.01,
+      maxDecimals: 2,
+    };
+
+    // ============================================================================
+    // REAL-TIME FX RATES HOOK (Multiple API Sources)
+    // ============================================================================
+
+    // API configuration for live exchange rates
+    const FX_API_CONFIG = {
+      // Primary: CoinGecko API (free tier, no API key required)
+      // Note: CoinGecko has CORS enabled, but may rate-limit
+      coingecko: {
+        // Get USDC, USDT prices in PHP, THB, IDR, MYR
+        stablecoinUrl:
+          "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether&vs_currencies=php,thb,idr,myr,usd",
+        // Map CoinGecko IDs to our stablecoin codes
+        coinIds: {
+          USDC: "usd-coin",
+          USDT: "tether",
         },
-        THB: {
-          interbank: 35.5,
-          customer: 35.2,
-          symbol: "฿",
-          name: "Thai Baht",
-          decimals: 2,
-          flag: "🇹🇭",
-        },
-        IDR: {
-          interbank: 15800,
-          customer: 15650,
-          symbol: "Rp",
-          name: "Indonesian Rupiah",
-          decimals: 0,
-          flag: "🇮🇩",
-        },
-        MYR: {
-          interbank: 4.65,
-          customer: 4.6,
-          symbol: "RM",
-          name: "Malaysian Ringgit",
-          decimals: 2,
-          flag: "🇲🇾",
-        },
-      };
-
-      // Live FX rates - will be updated from API
-      let FX_RATES = { ...DEFAULT_FX_RATES };
-
-      // Currency metadata (symbols, decimals, flags)
-      const CURRENCY_META = {
-        PHP: { symbol: "₱", name: "Philippine Peso", decimals: 2, flag: "🇵🇭" },
-        THB: { symbol: "฿", name: "Thai Baht", decimals: 2, flag: "🇹🇭" },
-        IDR: {
-          symbol: "Rp",
-          name: "Indonesian Rupiah",
-          decimals: 0,
-          flag: "🇮🇩",
-        },
-        MYR: {
-          symbol: "RM",
-          name: "Malaysian Ringgit",
-          decimals: 2,
-          flag: "🇲🇾",
-        },
-      };
-
-      const FEES = {
-        transactionFeePercent: 0.5,
-        networkFeeUSD: 0.5, // Reduced - modern stablecoin transfers are cheap
-        minimumFee: 0.1,
-      };
-
-      const LEGACY_FEES = {
-        transactionFeePercent: 3.0,
-        networkFeeUSD: 5.0,
-        fxSpreadPercent: 2.5,
-      };
-
-      const PRESET_AMOUNTS = [10, 50, 100, 500, 1000];
-
-      // Supported stablecoins (per Ripe's partnerships)
-      const STABLECOINS = {
-        USDC: {
-          name: "USD Coin",
-          symbol: "USDC",
-          color: "#2775CA",
-          description: "Circle's regulated stablecoin",
-          icon: "$",
-        },
-        USDT: {
-          name: "Tether USD",
-          symbol: "USDT",
-          color: "#26A17B",
-          description: "World's largest stablecoin",
-          icon: "₮",
-        },
-        USDG: {
-          name: "Global Dollar",
-          symbol: "USDG",
-          color: "#6366F1",
-          description: "Paxos-issued stablecoin",
-          icon: "G",
-        },
-      };
-
-      const INPUT_LIMITS = {
-        maxAmount: 1000000,
-        minAmount: 0.01,
-        maxDecimals: 2,
-      };
-
-      // ============================================================================
-      // REAL-TIME FX RATES HOOK (Multiple API Sources)
-      // ============================================================================
-
-      // API configuration for live exchange rates
-      const FX_API_CONFIG = {
-        // Primary: CoinGecko API (free tier, no API key required)
-        // Note: CoinGecko has CORS enabled, but may rate-limit
-        coingecko: {
-          // Get USDC, USDT prices in PHP, THB, IDR, MYR
-          stablecoinUrl:
-            "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether&vs_currencies=php,thb,idr,myr,usd",
-          // Map CoinGecko IDs to our stablecoin codes
-          coinIds: {
-            USDC: "usd-coin",
-            USDT: "tether",
-          },
-          parser: (data) => {
-            const result = {
-              stablecoins: {},
-              fiatRates: {},
-            };
-
-            // Parse stablecoin prices in each fiat currency
-            if (data["usd-coin"]) {
-              result.stablecoins.USDC = {
-                PHP: data["usd-coin"].php,
-                THB: data["usd-coin"].thb,
-                IDR: data["usd-coin"].idr,
-                MYR: data["usd-coin"].myr,
-                USD: data["usd-coin"].usd || 1.0,
-              };
-            }
-            if (data["tether"]) {
-              result.stablecoins.USDT = {
-                PHP: data["tether"].php,
-                THB: data["tether"].thb,
-                IDR: data["tether"].idr,
-                MYR: data["tether"].myr,
-                USD: data["tether"].usd || 1.0,
-              };
-            }
-
-            // USDG uses USDC rate as proxy (both are $1 stablecoins)
-            result.stablecoins.USDG = result.stablecoins.USDC;
-
-            // Calculate fiat rates from USDC prices (most stable reference)
-            const usdcPrices =
-              result.stablecoins.USDC || result.stablecoins.USDT;
-            if (usdcPrices && usdcPrices.PHP) {
-              result.fiatRates = {
-                PHP: usdcPrices.PHP,
-                THB: usdcPrices.THB,
-                IDR: usdcPrices.IDR,
-                MYR: usdcPrices.MYR,
-              };
-            }
-
-            return result;
-          },
-        },
-        // Fallback 1: ExchangeRate-API for fiat rates (very reliable)
-        fallback: {
-          url: "https://api.exchangerate-api.com/v4/latest/USD",
-          parser: (data) => ({
-            PHP: data.rates?.PHP,
-            THB: data.rates?.THB,
-            IDR: data.rates?.IDR,
-            MYR: data.rates?.MYR,
-          }),
-        },
-        // Fallback 2: Open Exchange Rates
-        fallback2: {
-          url: "https://open.er-api.com/v6/latest/USD",
-          parser: (data) => ({
-            PHP: data.rates?.PHP,
-            THB: data.rates?.THB,
-            IDR: data.rates?.IDR,
-            MYR: data.rates?.MYR,
-          }),
-        },
-        // Fallback 3: frankfurter.app (free, no API key, CORS enabled)
-        fallback3: {
-          url: "https://api.frankfurter.app/latest?from=USD&to=PHP,THB,IDR,MYR",
-          parser: (data) => ({
-            PHP: data.rates?.PHP,
-            THB: data.rates?.THB,
-            IDR: data.rates?.IDR,
-            MYR: data.rates?.MYR,
-          }),
-        },
-        // Refresh interval: 2 minutes
-        refreshInterval: 120000,
-        // Stale threshold: 10 minutes
-        staleThreshold: 600000,
-      };
-
-      // Stablecoin-specific rates (live data)
-      let STABLECOIN_RATES = {
-        USDC: { PHP: 59.0, THB: 35.5, IDR: 16700, MYR: 4.65, USD: 1.0 },
-        USDT: { PHP: 59.0, THB: 35.5, IDR: 16700, MYR: 4.65, USD: 1.0 },
-        USDG: { PHP: 59.0, THB: 35.5, IDR: 16700, MYR: 4.65, USD: 1.0 },
-      };
-
-      // Custom hook for live exchange rates with multiple fallbacks
-      const useLiveRates = () => {
-        const [rates, setRates] = useState(DEFAULT_FX_RATES);
-        const [stablecoinRates, setStablecoinRates] =
-          useState(STABLECOIN_RATES);
-        const [lastUpdated, setLastUpdated] = useState(null);
-        const [isLoading, setIsLoading] = useState(false);
-        const [error, setError] = useState(null);
-        const [source, setSource] = useState("fallback");
-
-        // Helper to update rates from fiat data
-        const updateFromFiatRates = (parsedRates, sourceName) => {
-          // Validate we have actual numbers
-          const isValid =
-            parsedRates.PHP &&
-            parsedRates.THB &&
-            parsedRates.IDR &&
-            parsedRates.MYR;
-          if (!isValid) return false;
-
-          const updatedRates = {};
-          Object.keys(CURRENCY_META).forEach((currency) => {
-            const interbankRate = parsedRates[currency];
-            const customerSpread = 0.003; // 0.3% spread - Ripe's competitive advantage
-            updatedRates[currency] = {
-              ...CURRENCY_META[currency],
-              interbank: interbankRate,
-              customer: interbankRate * (1 - customerSpread),
-            };
-          });
-
-          // Also update stablecoin rates
-          const newStablecoinRates = {
-            USDC: {
-              PHP: parsedRates.PHP,
-              THB: parsedRates.THB,
-              IDR: parsedRates.IDR,
-              MYR: parsedRates.MYR,
-              USD: 1.0,
-            },
-            USDT: {
-              PHP: parsedRates.PHP,
-              THB: parsedRates.THB,
-              IDR: parsedRates.IDR,
-              MYR: parsedRates.MYR,
-              USD: 1.0,
-            },
-            USDG: {
-              PHP: parsedRates.PHP,
-              THB: parsedRates.THB,
-              IDR: parsedRates.IDR,
-              MYR: parsedRates.MYR,
-              USD: 1.0,
-            },
+        parser: (data) => {
+          const result = {
+            stablecoins: {},
+            fiatRates: {},
           };
 
-          FX_RATES = updatedRates;
-          STABLECOIN_RATES = newStablecoinRates;
-          setRates(updatedRates);
-          setStablecoinRates(newStablecoinRates);
-          setLastUpdated(new Date());
-          setSource(sourceName);
-          console.log(`✅ Rates updated from ${sourceName}:`, updatedRates);
-          return true;
+          // Parse stablecoin prices in each fiat currency
+          if (data["usd-coin"]) {
+            result.stablecoins.USDC = {
+              PHP: data["usd-coin"].php,
+              THB: data["usd-coin"].thb,
+              IDR: data["usd-coin"].idr,
+              MYR: data["usd-coin"].myr,
+              USD: data["usd-coin"].usd || 1.0,
+            };
+          }
+          if (data["tether"]) {
+            result.stablecoins.USDT = {
+              PHP: data["tether"].php,
+              THB: data["tether"].thb,
+              IDR: data["tether"].idr,
+              MYR: data["tether"].myr,
+              USD: data["tether"].usd || 1.0,
+            };
+          }
+
+          // USDG uses USDC rate as proxy (both are $1 stablecoins)
+          result.stablecoins.USDG = result.stablecoins.USDC;
+
+          // Calculate fiat rates from USDC prices (most stable reference)
+          const usdcPrices =
+            result.stablecoins.USDC || result.stablecoins.USDT;
+          if (usdcPrices && usdcPrices.PHP) {
+            result.fiatRates = {
+              PHP: usdcPrices.PHP,
+              THB: usdcPrices.THB,
+              IDR: usdcPrices.IDR,
+              MYR: usdcPrices.MYR,
+            };
+          }
+
+          return result;
+        },
+      },
+      // Fallback 1: ExchangeRate-API for fiat rates (very reliable)
+      fallback: {
+        url: "https://api.exchangerate-api.com/v4/latest/USD",
+        parser: (data) => ({
+          PHP: data.rates?.PHP,
+          THB: data.rates?.THB,
+          IDR: data.rates?.IDR,
+          MYR: data.rates?.MYR,
+        }),
+      },
+      // Fallback 2: Open Exchange Rates
+      fallback2: {
+        url: "https://open.er-api.com/v6/latest/USD",
+        parser: (data) => ({
+          PHP: data.rates?.PHP,
+          THB: data.rates?.THB,
+          IDR: data.rates?.IDR,
+          MYR: data.rates?.MYR,
+        }),
+      },
+      // Fallback 3: frankfurter.app (free, no API key, CORS enabled)
+      fallback3: {
+        url: "https://api.frankfurter.app/latest?from=USD&to=PHP,THB,IDR,MYR",
+        parser: (data) => ({
+          PHP: data.rates?.PHP,
+          THB: data.rates?.THB,
+          IDR: data.rates?.IDR,
+          MYR: data.rates?.MYR,
+        }),
+      },
+      // Refresh interval: 2 minutes
+      refreshInterval: 120000,
+      // Stale threshold: 10 minutes
+      staleThreshold: 600000,
+    };
+
+    // Stablecoin-specific rates (live data) - Different rates per stablecoin
+    // USDC typically trades at exact $1, USDT slightly below, USDG slightly above
+    let STABLECOIN_RATES = {
+      USDC: { PHP: 59.00, THB: 35.50, IDR: 16700, MYR: 4.65, USD: 1.0000 },
+      USDT: { PHP: 58.88, THB: 35.43, IDR: 16672, MYR: 4.64, USD: 0.9998 },
+      USDG: { PHP: 59.12, THB: 35.57, IDR: 16728, MYR: 4.66, USD: 1.0020 },
+    };
+
+    // Custom hook for live exchange rates with multiple fallbacks
+    const useLiveRates = () => {
+      const [rates, setRates] = useState(DEFAULT_FX_RATES);
+      const [stablecoinRates, setStablecoinRates] =
+        useState(STABLECOIN_RATES);
+      const [lastUpdated, setLastUpdated] = useState(null);
+      const [isLoading, setIsLoading] = useState(false);
+      const [error, setError] = useState(null);
+      const [source, setSource] = useState("fallback");
+
+      // Helper to update rates from fiat data
+      const updateFromFiatRates = (parsedRates, sourceName) => {
+        // Validate we have actual numbers
+        const isValid =
+          parsedRates.PHP &&
+          parsedRates.THB &&
+          parsedRates.IDR &&
+          parsedRates.MYR;
+        if (!isValid) return false;
+
+        const updatedRates = {};
+        Object.keys(CURRENCY_META).forEach((currency) => {
+          const interbankRate = parsedRates[currency];
+          const customerSpread = 0.003; // 0.3% spread - Ripe's competitive advantage
+          updatedRates[currency] = {
+            ...CURRENCY_META[currency],
+            interbank: interbankRate,
+            customer: interbankRate * (1 - customerSpread),
+          };
+        });
+
+        // Also update stablecoin rates
+        const newStablecoinRates = {
+          USDC: {
+            PHP: parsedRates.PHP,
+            THB: parsedRates.THB,
+            IDR: parsedRates.IDR,
+            MYR: parsedRates.MYR,
+            USD: 1.0,
+          },
+          USDT: {
+            PHP: parsedRates.PHP,
+            THB: parsedRates.THB,
+            IDR: parsedRates.IDR,
+            MYR: parsedRates.MYR,
+            USD: 1.0,
+          },
+          USDG: {
+            PHP: parsedRates.PHP,
+            THB: parsedRates.THB,
+            IDR: parsedRates.IDR,
+            MYR: parsedRates.MYR,
+            USD: 1.0,
+          },
         };
 
-        const fetchRates = useCallback(async () => {
-          setIsLoading(true);
-          setError(null);
+        FX_RATES = updatedRates;
+        STABLECOIN_RATES = newStablecoinRates;
+        setRates(updatedRates);
+        setStablecoinRates(newStablecoinRates);
+        setLastUpdated(new Date());
+        setSource(sourceName);
+        console.log(`✅ Rates updated from ${sourceName}:`, updatedRates);
+        return true;
+      };
 
-          // Try CoinGecko first
-          try {
-            console.log("🔄 Trying CoinGecko API...");
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+      const fetchRates = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
 
-            const response = await fetch(
-              FX_API_CONFIG.coingecko.stablecoinUrl,
-              {
-                signal: controller.signal,
-                headers: { Accept: "application/json" },
-              }
-            );
-            clearTimeout(timeoutId);
+        // Try CoinGecko first
+        try {
+          console.log("🔄 Trying CoinGecko API...");
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
-            if (!response.ok) {
-              throw new Error(`CoinGecko HTTP ${response.status}`);
+          const response = await fetch(
+            FX_API_CONFIG.coingecko.stablecoinUrl,
+            {
+              signal: controller.signal,
+              headers: { Accept: "application/json" },
             }
+          );
+          clearTimeout(timeoutId);
 
+          if (!response.ok) {
+            throw new Error(`CoinGecko HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("📊 CoinGecko response:", data);
+
+          const parsed = FX_API_CONFIG.coingecko.parser(data);
+
+          if (parsed.fiatRates && parsed.fiatRates.PHP) {
+            // Update stablecoin rates
+            STABLECOIN_RATES = parsed.stablecoins;
+            setStablecoinRates(parsed.stablecoins);
+
+            if (updateFromFiatRates(parsed.fiatRates, "coingecko")) {
+              setIsLoading(false);
+              return;
+            }
+          }
+          throw new Error("Invalid CoinGecko data");
+        } catch (e) {
+          console.warn("⚠️ CoinGecko failed:", e.message);
+        }
+
+        // Try ExchangeRate-API
+        try {
+          console.log("🔄 Trying ExchangeRate-API...");
+          const response = await fetch(FX_API_CONFIG.fallback.url);
+          if (response.ok) {
             const data = await response.json();
-            console.log("📊 CoinGecko response:", data);
-
-            const parsed = FX_API_CONFIG.coingecko.parser(data);
-
-            if (parsed.fiatRates && parsed.fiatRates.PHP) {
-              // Update stablecoin rates
-              STABLECOIN_RATES = parsed.stablecoins;
-              setStablecoinRates(parsed.stablecoins);
-
-              if (updateFromFiatRates(parsed.fiatRates, "coingecko")) {
-                setIsLoading(false);
-                return;
-              }
+            const parsed = FX_API_CONFIG.fallback.parser(data);
+            if (updateFromFiatRates(parsed, "exchangerate-api")) {
+              setIsLoading(false);
+              return;
             }
-            throw new Error("Invalid CoinGecko data");
-          } catch (e) {
-            console.warn("⚠️ CoinGecko failed:", e.message);
           }
+        } catch (e) {
+          console.warn("⚠️ ExchangeRate-API failed:", e.message);
+        }
 
-          // Try ExchangeRate-API
-          try {
-            console.log("🔄 Trying ExchangeRate-API...");
-            const response = await fetch(FX_API_CONFIG.fallback.url);
-            if (response.ok) {
-              const data = await response.json();
-              const parsed = FX_API_CONFIG.fallback.parser(data);
-              if (updateFromFiatRates(parsed, "exchangerate-api")) {
-                setIsLoading(false);
-                return;
-              }
+        // Try Open ER API
+        try {
+          console.log("🔄 Trying Open.er-api...");
+          const response = await fetch(FX_API_CONFIG.fallback2.url);
+          if (response.ok) {
+            const data = await response.json();
+            const parsed = FX_API_CONFIG.fallback2.parser(data);
+            if (updateFromFiatRates(parsed, "open-er-api")) {
+              setIsLoading(false);
+              return;
             }
-          } catch (e) {
-            console.warn("⚠️ ExchangeRate-API failed:", e.message);
           }
+        } catch (e) {
+          console.warn("⚠️ Open.er-api failed:", e.message);
+        }
 
-          // Try Open ER API
-          try {
-            console.log("🔄 Trying Open.er-api...");
-            const response = await fetch(FX_API_CONFIG.fallback2.url);
-            if (response.ok) {
-              const data = await response.json();
-              const parsed = FX_API_CONFIG.fallback2.parser(data);
-              if (updateFromFiatRates(parsed, "open-er-api")) {
-                setIsLoading(false);
-                return;
-              }
+        // Try Frankfurter
+        try {
+          console.log("🔄 Trying Frankfurter API...");
+          const response = await fetch(FX_API_CONFIG.fallback3.url);
+          if (response.ok) {
+            const data = await response.json();
+            const parsed = FX_API_CONFIG.fallback3.parser(data);
+            if (updateFromFiatRates(parsed, "frankfurter")) {
+              setIsLoading(false);
+              return;
             }
-          } catch (e) {
-            console.warn("⚠️ Open.er-api failed:", e.message);
           }
+        } catch (e) {
+          console.warn("⚠️ Frankfurter failed:", e.message);
+        }
 
-          // Try Frankfurter
-          try {
-            console.log("🔄 Trying Frankfurter API...");
-            const response = await fetch(FX_API_CONFIG.fallback3.url);
-            if (response.ok) {
-              const data = await response.json();
-              const parsed = FX_API_CONFIG.fallback3.parser(data);
-              if (updateFromFiatRates(parsed, "frankfurter")) {
-                setIsLoading(false);
-                return;
-              }
-            }
-          } catch (e) {
-            console.warn("⚠️ Frankfurter failed:", e.message);
-          }
+        // All APIs failed - use cached
+        console.error("❌ All APIs failed, using cached rates");
+        setError("Unable to fetch live rates");
+        setSource("cached");
+        setLastUpdated(new Date());
+        setIsLoading(false);
+      }, []);
 
-          // All APIs failed - use cached
-          console.error("❌ All APIs failed, using cached rates");
-          setError("Unable to fetch live rates");
-          setSource("cached");
-          setLastUpdated(new Date());
-          setIsLoading(false);
-        }, []);
+      // Initial fetch on mount
+      useEffect(() => {
+        fetchRates();
+      }, [fetchRates]);
 
-        // Initial fetch on mount
-        useEffect(() => {
-          fetchRates();
-        }, [fetchRates]);
-
-        // Auto-refresh rates every 2 minutes
-        useEffect(() => {
-          const intervalId = setInterval(
-            fetchRates,
-            FX_API_CONFIG.refreshInterval
-          );
-          return () => clearInterval(intervalId);
-        }, [fetchRates]);
-
-        // Calculate if rates are stale
-        const isStale = useMemo(() => {
-          if (!lastUpdated) return true;
-          return (
-            Date.now() - lastUpdated.getTime() > FX_API_CONFIG.staleThreshold
-          );
-        }, [lastUpdated]);
-
-        // Format last updated time
-        const lastUpdatedText = useMemo(() => {
-          if (!lastUpdated) return "Fetching...";
-          const now = new Date();
-          const diffMs = now - lastUpdated;
-          const diffMins = Math.floor(diffMs / 60000);
-
-          if (diffMins < 1) return "Just now";
-          if (diffMins === 1) return "1 min ago";
-          if (diffMins < 60) return `${diffMins} mins ago`;
-
-          return lastUpdated.toLocaleTimeString();
-        }, [lastUpdated]);
-
-        // Get rate for specific stablecoin
-        const getStablecoinRate = useCallback(
-          (stablecoin, fiatCurrency) => {
-            const coinRates = stablecoinRates[stablecoin];
-            if (coinRates && coinRates[fiatCurrency]) {
-              return coinRates[fiatCurrency];
-            }
-            // Fallback to FX_RATES
-            return FX_RATES[fiatCurrency]?.customer || 1;
-          },
-          [stablecoinRates]
+      // Auto-refresh rates every 2 minutes
+      useEffect(() => {
+        const intervalId = setInterval(
+          fetchRates,
+          FX_API_CONFIG.refreshInterval
         );
+        return () => clearInterval(intervalId);
+      }, [fetchRates]);
 
-        return {
-          rates,
-          stablecoinRates,
-          lastUpdated,
-          lastUpdatedText,
-          isLoading,
-          isStale,
-          error,
-          source,
-          refreshRates: fetchRates,
-          getStablecoinRate,
-        };
-      };
-
-      // ============================================================================
-      // UTILITY FUNCTIONS
-      // ============================================================================
-
-      const formatCurrency = (amount, currency) => {
-        const config = FX_RATES[currency];
-        if (!config) return amount.toFixed(2);
-        if (!isFinite(amount) || isNaN(amount)) return `${config.symbol}0`;
-
-        const formatted = Math.abs(amount).toLocaleString("en-US", {
-          minimumFractionDigits: config.decimals,
-          maximumFractionDigits: config.decimals,
-        });
-
-        const sign = amount < 0 ? "-" : "";
-        return `${sign}${config.symbol}${formatted}`;
-      };
-
-      const formatUSDC = (amount) => {
-        if (!isFinite(amount) || isNaN(amount)) return "0.00";
-        return Math.abs(amount).toLocaleString("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-      };
-
-      const validateAmount = (value) => {
-        if (value === "" || value === undefined) {
-          return { isValid: true, value: 0, error: null };
-        }
-
-        const numValue = parseFloat(value);
-
-        if (isNaN(numValue)) {
-          return {
-            isValid: false,
-            value: 0,
-            error: "Please enter a valid number",
-          };
-        }
-
-        if (numValue < 0) {
-          return {
-            isValid: false,
-            value: 0,
-            error: "Amount cannot be negative",
-          };
-        }
-
-        if (numValue > INPUT_LIMITS.maxAmount) {
-          return {
-            isValid: false,
-            value: INPUT_LIMITS.maxAmount,
-            error: `Maximum: ${INPUT_LIMITS.maxAmount.toLocaleString()} USDC`,
-          };
-        }
-
-        const roundedValue = Math.round(numValue * 100) / 100;
-        return { isValid: true, value: roundedValue, error: null };
-      };
-
-      const calculateConversion = (usdcAmount, currency) => {
-        const rates = FX_RATES[currency];
-        if (!rates || !isFinite(usdcAmount) || usdcAmount <= 0) return null;
-
-        const grossFiat = usdcAmount * rates.customer;
-        const transactionFee = Math.max(
-          usdcAmount * (FEES.transactionFeePercent / 100),
-          FEES.minimumFee
-        );
-        const networkFee = FEES.networkFeeUSD * rates.customer;
-        const fxSpread = usdcAmount * (rates.interbank - rates.customer);
-        const fxSpreadPercent =
-          ((rates.interbank - rates.customer) / rates.interbank) * 100;
-        const transactionFeeInFiat = transactionFee * rates.customer;
-        const netFiatReceived = grossFiat - transactionFeeInFiat - networkFee;
-        const effectiveRate = usdcAmount > 0 ? netFiatReceived / usdcAmount : 0;
-        const totalFeesInFiat = transactionFeeInFiat + networkFee;
-        const totalFeesPercent =
-          usdcAmount > 0 ? (totalFeesInFiat / grossFiat) * 100 : 0;
-
-        return {
-          grossFiat,
-          transactionFee,
-          transactionFeeInFiat,
-          networkFee,
-          fxSpread,
-          fxSpreadPercent,
-          netFiatReceived,
-          effectiveRate,
-          totalFeesInFiat,
-          totalFeesPercent,
-          customerRate: rates.customer,
-          interbankRate: rates.interbank,
-        };
-      };
-
-      const calculateReverseConversion = (fiatAmount, currency) => {
-        const rates = FX_RATES[currency];
-        if (!rates || !isFinite(fiatAmount) || fiatAmount <= 0) return null;
-
-        const networkFeeInFiat = FEES.networkFeeUSD * rates.customer;
-        const feeMultiplier = 1 - FEES.transactionFeePercent / 100;
-
-        let requiredUSDC =
-          (fiatAmount + networkFeeInFiat) / (rates.customer * feeMultiplier);
-
-        const calculatedFee = requiredUSDC * (FEES.transactionFeePercent / 100);
-        if (calculatedFee < FEES.minimumFee) {
-          requiredUSDC =
-            (fiatAmount + networkFeeInFiat + FEES.minimumFee * rates.customer) /
-            rates.customer;
-        }
-
-        requiredUSDC = Math.round(requiredUSDC * 100) / 100;
-        const forward = calculateConversion(requiredUSDC, currency);
-
-        return { ...forward, requiredUSDC, targetFiat: fiatAmount };
-      };
-
-      const calculateLegacyConversion = (usdcAmount, currency) => {
-        const rates = FX_RATES[currency];
-        if (!rates || !isFinite(usdcAmount) || usdcAmount <= 0) return null;
-
-        const legacyRate =
-          rates.interbank * (1 - LEGACY_FEES.fxSpreadPercent / 100);
-        const grossFiat = usdcAmount * legacyRate;
-        const transactionFee =
-          usdcAmount * (LEGACY_FEES.transactionFeePercent / 100);
-        const transactionFeeInFiat = transactionFee * legacyRate;
-        const networkFee = LEGACY_FEES.networkFeeUSD * legacyRate;
-        const netFiatReceived = grossFiat - transactionFeeInFiat - networkFee;
-
-        return {
-          netFiatReceived,
-          totalFeesInFiat: transactionFeeInFiat + networkFee,
-          effectiveRate: usdcAmount > 0 ? netFiatReceived / usdcAmount : 0,
-          legacyRate,
-          transactionFeeInFiat,
-          networkFee,
-        };
-      };
-
-      // ============================================================================
-      // SUB-COMPONENTS
-      // ============================================================================
-
-      const DirectionToggle = ({ direction, onToggle, isDark }) => {
-        const baseClass =
-          "flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all text-sm min-h-[44px]";
-        const getActiveStyle = (isActive) =>
-          isActive
-            ? {
-                background: "linear-gradient(135deg, #00d4aa 0%, #00b894 100%)",
-                boxShadow: "0 4px 14px rgba(0,212,170,0.3)",
-              }
-            : {};
-        const inactiveClass = isDark
-          ? "bg-gray-700/50 text-gray-300 hover:bg-gray-600 border border-gray-600"
-          : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200";
-
+      // Calculate if rates are stale
+      const isStale = useMemo(() => {
+        if (!lastUpdated) return true;
         return (
-          <div
-            className="flex gap-2"
-            role="radiogroup"
-            aria-label="Transfer direction"
-          >
-            <button
-              type="button"
-              role="radio"
-              aria-checked={direction === "send"}
-              onClick={() => onToggle("send")}
-              className={`${baseClass} ${
-                direction === "send" ? "text-white" : inactiveClass
+          Date.now() - lastUpdated.getTime() > FX_API_CONFIG.staleThreshold
+        );
+      }, [lastUpdated]);
+
+      // Format last updated time
+      const lastUpdatedText = useMemo(() => {
+        if (!lastUpdated) return "Fetching...";
+        const now = new Date();
+        const diffMs = now - lastUpdated;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 1) return "Just now";
+        if (diffMins === 1) return "1 min ago";
+        if (diffMins < 60) return `${diffMins} mins ago`;
+
+        return lastUpdated.toLocaleTimeString();
+      }, [lastUpdated]);
+
+      // Get rate for specific stablecoin
+      const getStablecoinRate = useCallback(
+        (stablecoin, fiatCurrency) => {
+          const coinRates = stablecoinRates[stablecoin];
+          if (coinRates && coinRates[fiatCurrency]) {
+            return coinRates[fiatCurrency];
+          }
+          // Fallback to FX_RATES
+          return FX_RATES[fiatCurrency]?.customer || 1;
+        },
+        [stablecoinRates]
+      );
+
+      return {
+        rates,
+        stablecoinRates,
+        lastUpdated,
+        lastUpdatedText,
+        isLoading,
+        isStale,
+        error,
+        source,
+        refreshRates: fetchRates,
+        getStablecoinRate,
+      };
+    };
+
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
+
+    const formatCurrency = (amount, currency) => {
+      const config = FX_RATES[currency];
+      if (!config) return amount.toFixed(2);
+      if (!isFinite(amount) || isNaN(amount)) return `${config.symbol}0`;
+
+      const formatted = Math.abs(amount).toLocaleString("en-US", {
+        minimumFractionDigits: config.decimals,
+        maximumFractionDigits: config.decimals,
+      });
+
+      const sign = amount < 0 ? "-" : "";
+      return `${sign}${config.symbol}${formatted}`;
+    };
+
+    const formatUSDC = (amount) => {
+      if (!isFinite(amount) || isNaN(amount)) return "0.00";
+      return Math.abs(amount).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    };
+
+    const validateAmount = (value) => {
+      if (value === "" || value === undefined) {
+        return { isValid: true, value: 0, error: null };
+      }
+
+      const numValue = parseFloat(value);
+
+      if (isNaN(numValue)) {
+        return {
+          isValid: false,
+          value: 0,
+          error: "Please enter a valid number",
+        };
+      }
+
+      if (numValue < 0) {
+        return {
+          isValid: false,
+          value: 0,
+          error: "Amount cannot be negative",
+        };
+      }
+
+      if (numValue > INPUT_LIMITS.maxAmount) {
+        return {
+          isValid: false,
+          value: INPUT_LIMITS.maxAmount,
+          error: `Maximum: ${INPUT_LIMITS.maxAmount.toLocaleString()} USDC`,
+        };
+      }
+
+      const roundedValue = Math.round(numValue * 100) / 100;
+      return { isValid: true, value: roundedValue, error: null };
+    };
+
+    const calculateConversion = (stablecoinAmount, currency, stablecoin = "USDC", stablecoinRatesParam = null) => {
+      const rates = FX_RATES[currency];
+      if (!rates || !isFinite(stablecoinAmount) || stablecoinAmount <= 0) return null;
+
+      // Use passed stablecoinRates if available, then global STABLECOIN_RATES, then fallback to customer rate
+      const ratesSource = stablecoinRatesParam || STABLECOIN_RATES;
+      const stablecoinRate = ratesSource[stablecoin]?.[currency] || rates.customer;
+      const grossFiat = stablecoinAmount * stablecoinRate;
+      const transactionFee = Math.max(
+        stablecoinAmount * (FEES.transactionFeePercent / 100),
+        FEES.minimumFee
+      );
+      const networkFee = FEES.networkFeeUSD * stablecoinRate;
+      const fxSpread = stablecoinAmount * (rates.interbank - stablecoinRate);
+      const fxSpreadPercent =
+        ((rates.interbank - stablecoinRate) / rates.interbank) * 100;
+      const transactionFeeInFiat = transactionFee * stablecoinRate;
+      const netFiatReceived = grossFiat - transactionFeeInFiat - networkFee;
+      const effectiveRate = stablecoinAmount > 0 ? netFiatReceived / stablecoinAmount : 0;
+      const totalFeesInFiat = transactionFeeInFiat + networkFee;
+      const totalFeesPercent =
+        stablecoinAmount > 0 ? (totalFeesInFiat / grossFiat) * 100 : 0;
+
+      return {
+        grossFiat,
+        transactionFee,
+        transactionFeeInFiat,
+        networkFee,
+        fxSpread,
+        fxSpreadPercent,
+        netFiatReceived,
+        effectiveRate,
+        totalFeesInFiat,
+        totalFeesPercent,
+        customerRate: stablecoinRate,
+        interbankRate: rates.interbank,
+        stablecoin,
+      };
+    };
+
+    const calculateReverseConversion = (fiatAmount, currency, stablecoin = "USDC", stablecoinRatesParam = null) => {
+      const rates = FX_RATES[currency];
+      if (!rates || !isFinite(fiatAmount) || fiatAmount <= 0) return null;
+
+      // Use passed stablecoinRates if available, then global STABLECOIN_RATES, then fallback to customer rate
+      const ratesSource = stablecoinRatesParam || STABLECOIN_RATES;
+      const stablecoinRate = ratesSource[stablecoin]?.[currency] || rates.customer;
+      const networkFeeInFiat = FEES.networkFeeUSD * stablecoinRate;
+      const feeMultiplier = 1 - FEES.transactionFeePercent / 100;
+
+      let requiredStablecoin =
+        (fiatAmount + networkFeeInFiat) / (stablecoinRate * feeMultiplier);
+
+      const calculatedFee = requiredStablecoin * (FEES.transactionFeePercent / 100);
+      if (calculatedFee < FEES.minimumFee) {
+        requiredStablecoin =
+          (fiatAmount + networkFeeInFiat + FEES.minimumFee * stablecoinRate) /
+          stablecoinRate;
+      }
+
+      requiredStablecoin = Math.round(requiredStablecoin * 100) / 100;
+      const forward = calculateConversion(requiredStablecoin, currency, stablecoin, stablecoinRatesParam);
+
+      return { ...forward, requiredUSDC: requiredStablecoin, targetFiat: fiatAmount };
+    };
+
+    const calculateLegacyConversion = (usdcAmount, currency) => {
+      const rates = FX_RATES[currency];
+      if (!rates || !isFinite(usdcAmount) || usdcAmount <= 0) return null;
+
+      const legacyRate =
+        rates.interbank * (1 - LEGACY_FEES.fxSpreadPercent / 100);
+      const grossFiat = usdcAmount * legacyRate;
+      const transactionFee =
+        usdcAmount * (LEGACY_FEES.transactionFeePercent / 100);
+      const transactionFeeInFiat = transactionFee * legacyRate;
+      const networkFee = LEGACY_FEES.networkFeeUSD * legacyRate;
+      const netFiatReceived = grossFiat - transactionFeeInFiat - networkFee;
+
+      return {
+        netFiatReceived,
+        totalFeesInFiat: transactionFeeInFiat + networkFee,
+        effectiveRate: usdcAmount > 0 ? netFiatReceived / usdcAmount : 0,
+        legacyRate,
+        transactionFeeInFiat,
+        networkFee,
+      };
+    };
+
+    // ============================================================================
+    // SUB-COMPONENTS
+    // ============================================================================
+
+    const DirectionToggle = ({ direction, onToggle, isDark }) => {
+      const baseClass =
+        "flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all text-sm min-h-[44px]";
+      const getActiveStyle = (isActive) =>
+        isActive
+          ? {
+            background: "linear-gradient(135deg, #00d4aa 0%, #00b894 100%)",
+            boxShadow: "0 4px 14px rgba(0,212,170,0.3)",
+          }
+          : {};
+      const inactiveClass = isDark
+        ? "bg-gray-700/50 text-gray-300 hover:bg-gray-600 border border-gray-600"
+        : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200";
+
+      return (
+        <div
+          className="flex gap-2"
+          role="radiogroup"
+          aria-label="Transfer direction"
+        >
+          <button
+            type="button"
+            role="radio"
+            aria-checked={direction === "send"}
+            onClick={() => onToggle("send")}
+            className={`${baseClass} ${direction === "send" ? "text-white" : inactiveClass
               }`}
-              style={getActiveStyle(direction === "send")}
-            >
-              <Zap className="w-4 h-4" />
-              I'm sending
-            </button>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={direction === "receive"}
-              onClick={() => onToggle("receive")}
-              className={`${baseClass} ${
-                direction === "receive" ? "text-white" : inactiveClass
+            style={getActiveStyle(direction === "send")}
+          >
+            <Zap className="w-4 h-4" />
+            I'm sending
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={direction === "receive"}
+            onClick={() => onToggle("receive")}
+            className={`${baseClass} ${direction === "receive" ? "text-white" : inactiveClass
               }`}
-              style={getActiveStyle(direction === "receive")}
-            >
-              <ArrowDown className="w-4 h-4" />
-              They receive
-            </button>
-          </div>
-        );
-      };
-
-      const CurrencyButton = ({
-        code,
-        config,
-        isSelected,
-        onClick,
-        isDark,
-      }) => {
-        const baseClass =
-          "p-3 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[60px]";
-        const activeStyle = isSelected
-          ? {
-              background: "linear-gradient(135deg, #00d4aa 0%, #00b894 100%)",
-              boxShadow: "0 4px 14px rgba(0,212,170,0.3)",
-            }
-          : {};
-        const inactiveClass = isDark
-          ? "bg-gray-700/50 text-gray-200 hover:bg-gray-600 border border-gray-600"
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200";
-
-        return (
-          <button
-            type="button"
-            onClick={onClick}
-            aria-pressed={isSelected}
-            aria-label={`Select ${config.name}`}
-            className={`${baseClass} ${
-              isSelected ? "text-white" : inactiveClass
-            }`}
-            style={activeStyle}
+            style={getActiveStyle(direction === "receive")}
           >
-            <div className={`flex flex-col items-center gap-1 ${isDark ? "text-white" : "text-black"}`}>
-              <span className="text-lg">
-                {config.flag} {config.symbol}
-              </span>
-              <span className="text-xs opacity-80">{code}</span>
-            </div>
+            <ArrowDown className="w-4 h-4" />
+            They receive
           </button>
-        );
-      };
+        </div>
+      );
+    };
 
-      const PresetButton = ({ amount, isSelected, onClick, isDark }) => {
-        const baseClass =
-          "px-3 py-2.5 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm min-w-[50px] min-h-[44px]";
-        const activeStyle = isSelected
-          ? {
-              background: "linear-gradient(135deg, #00d4aa 0%, #00b894 100%)",
-              boxShadow: "0 4px 14px rgba(0,212,170,0.25)",
-            }
-          : {};
-        const inactiveClass = isDark
-          ? "bg-gray-700/50 text-white hover:bg-gray-600 border border-gray-600"
-          : "bg-gray-100 textwhite hover:bg-gray-200 border border-gray-200";
+    const CurrencyButton = ({
+      code,
+      config,
+      isSelected,
+      onClick,
+      isDark,
+    }) => {
+      const baseClass =
+        "p-3 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[60px]";
+      const activeStyle = isSelected
+        ? {
+          background: "linear-gradient(135deg, #00d4aa 0%, #00b894 100%)",
+          boxShadow: "0 4px 14px rgba(0,212,170,0.3)",
+        }
+        : {};
+      const inactiveClass = isDark
+        ? "bg-gray-700/50 text-gray-200 hover:bg-gray-600 border border-gray-600"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200";
 
-        return (
-          <button
-            type="button"
-            onClick={onClick}
-            aria-pressed={isSelected}
-            className={`${baseClass} ${
-              isSelected ? "text-white" : inactiveClass
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          aria-pressed={isSelected}
+          aria-label={`Select ${config.name}`}
+          className={`${baseClass} ${isSelected ? "text-white" : inactiveClass
             }`}
-            style={activeStyle}
-          >
-            {amount >= 1000 ? `${amount / 1000}K` : amount}
-          </button>
-        );
-      };
-
-      // Stablecoin selector button
-      const StablecoinButton = ({
-        code,
-        config,
-        isSelected,
-        onClick,
-        isDark,
-      }) => {
-        const baseClass =
-          "px-3 py-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm min-h-[44px] flex items-center gap-2";
-        const activeStyle = isSelected
-          ? {
-              background: `linear-gradient(135deg, ${config.color} 0%, ${config.color}dd 100%)`,
-              boxShadow: `0 4px 14px ${config.color}40`,
-            }
-          : {};
-        const inactiveClass = isDark
-          ? "bg-gray-700/50 text-white hover:bg-gray-600 border border-gray-600"
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200";
-
-        return (
-          <button
-            type="button"
-            onClick={onClick}
-            aria-pressed={isSelected}
-            aria-label={`Select ${config.name}`}
-            className={`${baseClass} ${
-              isSelected ? "text-white" : inactiveClass
-            }`}
-            style={activeStyle}
-          >
-            <span
-              className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-              style={{
-                background: isSelected ? "rgba(255,255,255,0.2)" : config.color,
-              }}
-            >
-              {config.icon}
+          style={activeStyle}
+        >
+          <div className={`flex flex-col items-center gap-1 ${isDark ? "text-white" : "text-black"}`}>
+            <span className="text-lg">
+              {config.flag} {config.symbol}
             </span>
-            <span>{code}</span>
-          </button>
-        );
-      };
+            <span className="text-xs opacity-80">{code}</span>
+          </div>
+        </button>
+      );
+    };
 
-      const FeeLineItem = ({
-        label,
-        value,
-        isDeduction = false,
-        isTotal = false,
-        hint = null,
-        mutedTextClass,
-      }) => {
-        return (
-          <div
-            className={`flex justify-between items-center py-1 ${
-              isTotal ? "pt-3" : ""
+    const PresetButton = ({ amount, isSelected, onClick, isDark }) => {
+      const baseClass =
+        "px-3 py-2.5 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm min-w-[50px] min-h-[44px]";
+      const activeStyle = isSelected
+        ? {
+          background: "linear-gradient(135deg, #00d4aa 0%, #00b894 100%)",
+          boxShadow: "0 4px 14px rgba(0,212,170,0.25)",
+        }
+        : {};
+      const inactiveClass = isDark
+        ? "bg-gray-700/50 text-white hover:bg-gray-600 border border-gray-600"
+        : "bg-gray-100 textwhite hover:bg-gray-200 border border-gray-200";
+
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          aria-pressed={isSelected}
+          className={`${baseClass} ${isSelected ? "text-white" : inactiveClass
             }`}
+          style={activeStyle}
+        >
+          {amount >= 1000 ? `${amount / 1000}K` : amount}
+        </button>
+      );
+    };
+
+    // Stablecoin selector button
+    const StablecoinButton = ({
+      code,
+      config,
+      isSelected,
+      onClick,
+      isDark,
+    }) => {
+      const baseClass =
+        "px-3 py-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm min-h-[44px] flex items-center gap-2";
+      const activeStyle = isSelected
+        ? {
+          background: `linear-gradient(135deg, ${config.color} 0%, ${config.color}dd 100%)`,
+          boxShadow: `0 4px 14px ${config.color}40`,
+        }
+        : {};
+      const inactiveClass = isDark
+        ? "bg-gray-700/50 text-white hover:bg-gray-600 border border-gray-600"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200";
+
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          aria-pressed={isSelected}
+          aria-label={`Select ${config.name}`}
+          className={`${baseClass} ${isSelected ? "text-white" : inactiveClass
+            }`}
+          style={activeStyle}
+        >
+          <span
+            className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
+            style={{
+              background: isSelected ? "rgba(255,255,255,0.2)" : config.color,
+            }}
           >
-            <div className="flex flex-col">
-              <span
-                className={isTotal ? "font-bold text-base" : mutedTextClass}
-              >
-                {label}
-              </span>
-              {hint && (
-                <span className={`text-xs ${mutedTextClass}`}>{hint}</span>
-              )}
-            </div>
+            {config.icon}
+          </span>
+          <span>{code}</span>
+        </button>
+      );
+    };
+
+    const FeeLineItem = ({
+      label,
+      value,
+      isDeduction = false,
+      isTotal = false,
+      hint = null,
+      mutedTextClass,
+    }) => {
+      return (
+        <div
+          className={`flex justify-between items-center py-1 ${isTotal ? "pt-3" : ""
+            }`}
+        >
+          <div className="flex flex-col">
             <span
-              className={`tabular-nums font-mono ${
-                isTotal
-                  ? "font-bold text-xl text-green-600"
-                  : isDeduction
+              className={isTotal ? "font-bold text-base" : mutedTextClass}
+            >
+              {label}
+            </span>
+            {hint && (
+              <span className={`text-xs ${mutedTextClass}`}>{hint}</span>
+            )}
+          </div>
+          <span
+            className={`tabular-nums font-mono ${isTotal
+                ? "font-bold text-xl text-green-600"
+                : isDeduction
                   ? "font-semibold text-red-500"
                   : "font-semibold"
               }`}
-            >
-              {isDeduction && !isTotal ? "−" : ""}
-              {value}
-            </span>
-          </div>
-        );
-      };
-
-      // ============================================================================
-      // MAIN COMPONENT
-      // ============================================================================
-
-      const FXWidget = ({
-        defaultCurrency = "PHP",
-        defaultAmount = 100,
-        defaultStablecoin = "USDC",
-        theme: initialTheme = "light",
-        onThemeChange,
-        showComparison = true,
-        showDirectionToggle = true,
-        showStablecoinSelector = true,
-        brandColor = "#00d4aa", // Ripe teal brand color
-        onConversionComplete,
-      }) => {
-        const [amount, setAmount] = useState(defaultAmount);
-        const [currency, setCurrency] = useState(defaultCurrency);
-        const [stablecoin, setStablecoin] = useState(defaultStablecoin);
-        const [theme, setTheme] = useState(initialTheme);
-        const [showDetails, setShowDetails] = useState(false);
-        const [inputValue, setInputValue] = useState(defaultAmount.toString());
-        const [direction, setDirection] = useState("send");
-        const [inputError, setInputError] = useState(null);
-
-        // Use live FX rates from CoinGecko
-        const {
-          rates: liveRates,
-          stablecoinRates,
-          lastUpdatedText,
-          isLoading: ratesLoading,
-          isStale,
-          error: ratesError,
-          source: ratesSource,
-          refreshRates,
-          getStablecoinRate,
-        } = useLiveRates();
-
-        const ripeConversion = useMemo(() => {
-          if (!amount || amount <= 0) return null;
-          if (direction === "receive") {
-            return calculateReverseConversion(amount, currency);
-          }
-          return calculateConversion(amount, currency);
-        }, [
-          amount,
-          currency,
-          direction,
-          liveRates,
-          stablecoin,
-          stablecoinRates,
-        ]);
-
-        const legacyConversion = useMemo(() => {
-          if (!amount || amount <= 0 || !showComparison) return null;
-          const usdcToCompare =
-            direction === "receive" && ripeConversion
-              ? ripeConversion.requiredUSDC
-              : amount;
-          return calculateLegacyConversion(usdcToCompare, currency);
-        }, [
-          amount,
-          currency,
-          showComparison,
-          direction,
-          ripeConversion,
-          liveRates,
-          stablecoinRates,
-        ]);
-
-        const savings = useMemo(() => {
-          if (!ripeConversion || !legacyConversion) return null;
-          const ripeFiat = ripeConversion.netFiatReceived;
-          const legacyFiat = legacyConversion.netFiatReceived;
-          const savingsAmount = ripeFiat - legacyFiat;
-          const savingsPercent =
-            legacyFiat > 0 ? Math.abs((savingsAmount / legacyFiat) * 100) : 0;
-          return {
-            amount: savingsAmount,
-            percent: savingsPercent,
-            ripeBetter: savingsAmount > 0,
-          };
-        }, [ripeConversion, legacyConversion]);
-
-        const handleAmountChange = useCallback((e) => {
-          const value = e.target.value;
-          setInputValue(value);
-          const validation = validateAmount(value);
-          setInputError(validation.error);
-          if (validation.isValid) {
-            setAmount(validation.value);
-          }
-        }, []);
-
-        const handlePresetClick = useCallback((presetAmount) => {
-          setAmount(presetAmount);
-          setInputValue(presetAmount.toString());
-          setInputError(null);
-        }, []);
-
-        const handleCurrencyChange = useCallback((newCurrency) => {
-          setCurrency(newCurrency);
-        }, []);
-
-        const handleStablecoinChange = useCallback((newStablecoin) => {
-          setStablecoin(newStablecoin);
-        }, []);
-
-        const handleDirectionToggle = useCallback(
-          (newDirection) => {
-            setDirection(newDirection);
-            if (newDirection === "receive" && amount > 0 && ripeConversion) {
-              const fiatEquivalent = Math.round(ripeConversion.netFiatReceived);
-              setAmount(fiatEquivalent);
-              setInputValue(fiatEquivalent.toString());
-            } else if (
-              newDirection === "send" &&
-              amount > 0 &&
-              ripeConversion?.requiredUSDC
-            ) {
-              const usdcEquivalent = ripeConversion.requiredUSDC;
-              setAmount(usdcEquivalent);
-              setInputValue(usdcEquivalent.toString());
-            }
-          },
-          [amount, ripeConversion]
-        );
-
-        const toggleTheme = useCallback(() => {
-          const newTheme = theme === "light" ? "dark" : "light";
-          setTheme(newTheme);
-          if (onThemeChange) {
-            onThemeChange(newTheme);
-          }
-        }, [theme, onThemeChange]);
-
-        const toggleDetails = useCallback(() => {
-          setShowDetails((prev) => !prev);
-        }, []);
-
-        useEffect(() => {
-          if (ripeConversion && onConversionComplete) {
-            onConversionComplete({
-              ...ripeConversion,
-              direction,
-              currency,
-              stablecoin,
-              inputAmount: amount,
-            });
-          }
-        }, [
-          ripeConversion,
-          onConversionComplete,
-          direction,
-          currency,
-          stablecoin,
-          amount,
-        ]);
-
-        const isDark = theme === "dark";
-        const bgClass = isDark ? "bg-gray-900" : "bg-white";
-        const textClass = isDark ? "text-white" : "text-gray-900";
-        const mutedTextClass = isDark ? "text-gray-400" : "text-gray-600";
-        const borderClass = isDark ? "border-gray-700" : "border-gray-200";
-        const cardBgClass = isDark ? "bg-gray-800" : "bg-gray-50";
-        const inputBgClass = isDark
-          ? "bg-gray-800 border-gray-600"
-          : "bg-white border-gray-300";
-        const focusRingClass = isDark
-          ? "focus:ring-offset-gray-900"
-          : "focus:ring-offset-white";
-        const currencyConfig = FX_RATES[currency];
-        const stablecoinConfig = STABLECOINS[stablecoin];
-        const inputLabel =
-          direction === "send"
-            ? `You send (${stablecoin})`
-            : `Recipient gets (${currency})`;
-        const inputSuffix = direction === "send" ? stablecoin : currency;
-
-        return (
-          <main
-            className={`p-4 sm:p-6 ${bgClass} ${textClass} transition-colors duration-200 border ${borderClass}`}
-            role="region"
-            aria-label="FX Conversion Calculator"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span
-                    className="p-1.5 rounded-lg flex items-center justify-center"
-                    style={{
-                      background: "linear-gradient(135deg, #00d4aa, #7c3aed)",
-                    }}
-                  >
-                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  </span>
-                  <span
-                    className="text-xl sm:text-2xl font-extrabold tracking-tight"
-                    style={{
-                      background: "linear-gradient(90deg, #00d4aa, #7c3aed)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                      letterSpacing: "-0.03em",
-                    }}
-                  >
-                    ripe
-                  </span>
-                  <span
-                    className={`text-lg sm:text-xl font-semibold ${mutedTextClass}`}
-                  >
-                    FX
-                  </span>
-                </div>
-                <p className={`text-xs sm:text-sm ${mutedTextClass}`}>
-                  From stablecoin to e-wallet — instant settlement
-                </p>
-                {/* Live Rate Status Indicator */}
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  <div
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
-                      ratesLoading
-                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                        : ratesError
-                        ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                        : isStale
-                        ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                        : "bg-green-100 text-green-700 bg-gray-100 dark:text-green-400"
-                    }`}
-                  >
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        ratesLoading
-                          ? "bg-yellow-500 animate-pulse"
-                          : ratesError
-                          ? "bg-red-500"
-                          : isStale
-                          ? "bg-orange-500"
-                          : "bg-green-500"
-                      }`}
-                    ></span>
-                    {ratesLoading
-                      ? "Updating..."
-                      : ratesError
-                      ? "Cached"
-                      : isStale
-                      ? "Stale"
-                      : " Live"}
-                  </div>
-                  {/* Source badge */}
-                  {!ratesLoading && !ratesError && (
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        isDark ? "bg-gray-700" : "bg-gray-100"
-                      } ${mutedTextClass}`}
-                    >
-                      {ratesSource === "coingecko"
-                        ? "🦎 CoinGecko"
-                        : ratesSource === "exchangerate-api"
-                        ? "💱 ExchangeRate"
-                        : ratesSource === "open-er-api"
-                        ? "🌐 OpenER"
-                        : ratesSource === "frankfurter"
-                        ? "🇪🇺 Frankfurter"
-                        : "📦 Cached"}
-                    </span>
-                  )}
-                  <span className={`text-xs ${mutedTextClass}`}>
-                    {lastUpdatedText}
-                  </span>
-                  {!ratesLoading && (
-                    <button
-                      onClick={refreshRates}
-                      className={`p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${mutedTextClass}`}
-                      title="Refresh rates"
-                      aria-label="Refresh exchange rates"
-                    >
-                      <RefreshCw className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className={`p-2.5 rounded-xl ${cardBgClass} hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 ${focusRingClass} min-w-[44px] min-h-[44px] flex items-center justify-center`}
-                aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-              >
-                {isDark ? (
-                  <Sun className="w-5 h-5" />
-                ) : (
-                  <Moon className="w-5 h-5" />
-                )}
-              </button>
-            </div>
+            {isDeduction && !isTotal ? "−" : ""}
+            {value}
+          </span>
+        </div>
+      );
+    };
 
-            {/* Input Section */}
-            <div className="space-y-5">
-              {showDirectionToggle && (
-                <DirectionToggle
-                  direction={direction}
-                  onToggle={handleDirectionToggle}
-                  isDark={isDark}
-                />
-              )}
+    // ============================================================================
+    // MAIN COMPONENT
+    // ============================================================================
 
-              {/* Stablecoin Selector */}
-              {showStablecoinSelector && direction === "send" && (
-                <div>
-                  <label
-                    className={`block text-sm font-semibold ${mutedTextClass} mb-2`}
-                  >
-                    Select stablecoin
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(STABLECOINS).map(([code, config]) => (
-                      <StablecoinButton
-                        key={code}
-                        code={code}
-                        config={config}
-                        isSelected={stablecoin === code}
-                        onClick={() => handleStablecoinChange(code)}
-                        isDark={isDark}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+    const FXWidget = ({
+      setStablecoin,
+      stablecoin,
+      defaultCurrency = "PHP",
+      defaultAmount = 100,
+      defaultStablecoin = "USDC",
+      theme: initialTheme = "light",
+      onThemeChange,
+      showComparison = true,
+      showDirectionToggle = true,
+      showStablecoinSelector = true,
+      brandColor = "#00d4aa", // Ripe teal brand color
+      onConversionComplete,
+    }) => {
+      const [amount, setAmount] = useState(defaultAmount);
+      const [currency, setCurrency] = useState(defaultCurrency);
 
-              <div>
-                <label
-                  htmlFor="fx-amount-input"
-                  className={`block text-sm font-semibold ${mutedTextClass} mb-2`}
-                >
-                  {inputLabel}
-                </label>
-                <div className="relative">
-                  <input
-                    id="fx-amount-input"
-                    type="text"
-                    inputMode="decimal"
-                    pattern="[0-9]*\.?[0-9]*"
-                    value={inputValue}
-                    onChange={handleAmountChange}
-                    placeholder="Enter amount"
-                    aria-describedby={
-                      inputError ? "fx-amount-error" : undefined
-                    }
-                    aria-invalid={!!inputError}
-                    className={`w-full text-2xl sm:text-3xl font-bold px-4 py-3 pr-20 rounded-xl border-2 ${inputBgClass} ${textClass} focus:outline-none focus:ring-2 focus:ring-blue-500 ${focusRingClass} transition-all tabular-nums font-mono ${
-                      inputError ? "border-red-500" : ""
-                    }`}
-                  />
-                  <span
-                    className={`absolute right-4 top-1/2 -translate-y-1/2 text-base sm:text-lg font-semibold ${mutedTextClass} pointer-events-none`}
-                  >
-                    {inputSuffix}
-                  </span>
-                </div>
-                {inputError && (
-                  <p
-                    id="fx-amount-error"
-                    className="mt-2 text-sm text-red-500 flex items-center gap-1"
-                    role="alert"
-                  >
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    {inputError}
-                  </p>
-                )}
-              </div>
+      const [theme, setTheme] = useState(initialTheme);
+      const [showDetails, setShowDetails] = useState(false);
+      const [showFees, setShowFees] = useState(false);
+      const [showCompare, setShowCompare] = useState(false);
+      const [inputValue, setInputValue] = useState(defaultAmount.toString());
+      const [direction, setDirection] = useState("send");
+      const [inputError, setInputError] = useState(null);
 
-              {direction === "send" && (
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="group"
-                  aria-label="Preset amounts"
-                >
-                  {PRESET_AMOUNTS.map((preset) => (
-                    <PresetButton
-                      key={preset}
-                      amount={preset}
-                      isSelected={amount === preset && !inputError}
-                      onClick={() => handlePresetClick(preset)}
-                      isDark={isDark}
-                    />
-                  ))}
-                </div>
-              )}
+      // Use live FX rates from CoinGecko
+      const {
+        rates: liveRates,
+        stablecoinRates,
+        lastUpdatedText,
+        isLoading: ratesLoading,
+        isStale,
+        error: ratesError,
+        source: ratesSource,
+        refreshRates,
+        getStablecoinRate,
+      } = useLiveRates();
 
-              <div>
-                <label
-                  className={`block text-sm font-semibold ${mutedTextClass} mb-2`}
-                >
-                  {direction === "send" ? "Convert to" : "Currency"}
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {Object.entries(FX_RATES).map(([code, config]) => (
-                    <CurrencyButton
-                      key={code}
-                      code={code}
-                      config={config}
-                      isSelected={currency === code}
-                      onClick={() => handleCurrencyChange(code)}
-                      isDark={isDark}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+      const ripeConversion = useMemo(() => {
+        if (!amount || amount <= 0) return null;
+        if (direction === "receive") {
+          return calculateReverseConversion(amount, currency, stablecoin, stablecoinRates);
+        }
+        return calculateConversion(amount, currency, stablecoin, stablecoinRates);
+      }, [
+        amount,
+        currency,
+        direction,
+        liveRates,
+        stablecoin,
+        stablecoinRates,
+      ]);
 
-            {/* Results Card */}
-            {amount > 0 && ripeConversion && !inputError && (
-              <div
-                className={`mt-6 p-5 sm:p-6 rounded-2xl transition-all relative overflow-hidden`}
-                style={{
-                  background: isDark
-                    ? "linear-gradient(135deg, rgba(0,212,170,0.1) 0%, rgba(124,58,237,0.1) 100%)"
-                    : "linear-gradient(135deg, rgba(0,212,170,0.05) 0%, rgba(124,58,237,0.05) 100%)",
-                  border: "2px solid",
-                  borderImage: "linear-gradient(135deg, #00d4aa, #7c3aed) 1",
-                }}
-                aria-live="polite"
-                aria-atomic="true"
-              >
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-center sm:text-left flex-1">
-                    <p className={`text-xs sm:text-sm ${mutedTextClass} mb-1`}>
-                      You send
-                    </p>
-                    <p
-                      className="text-2xl sm:text-3xl font-bold tabular-nums font-mono"
-                      style={{ color: stablecoinConfig?.color || "#00d4aa" }}
-                    >
-                      {formatUSDC(
-                        direction === "receive"
-                          ? ripeConversion.requiredUSDC
-                          : amount
-                      )}{" "}
-                      {stablecoin}
-                    </p>
-                  </div>
+      const legacyConversion = useMemo(() => {
+        if (!amount || amount <= 0) return null;
+        const usdcToCompare =
+          direction === "receive" && ripeConversion
+            ? ripeConversion.requiredUSDC
+            : amount;
+        return calculateLegacyConversion(usdcToCompare, currency);
+      }, [
+        amount,
+        currency,
+        direction,
+        ripeConversion,
+        liveRates,
+        stablecoinRates,
+      ]);
 
-                  <div className="flex-shrink-0">
-                    <div
-                      className={`p-2 rounded-full ${
-                        isDark ? "bg-gray-700" : "bg-gray-200"
-                      }`}
-                    >
-                      <ArrowRight
-                        className={`w-6 h-6 ${mutedTextClass} transform sm:rotate-0 rotate-90`}
-                      />
-                    </div>
-                  </div>
+      const savings = useMemo(() => {
+        if (!ripeConversion || !legacyConversion) return null;
+        const ripeFiat = ripeConversion.netFiatReceived;
+        const legacyFiat = legacyConversion.netFiatReceived;
+        const savingsAmount = ripeFiat - legacyFiat;
+        const savingsPercent =
+          legacyFiat > 0 ? Math.abs((savingsAmount / legacyFiat) * 100) : 0;
+        return {
+          amount: savingsAmount,
+          percent: savingsPercent,
+          ripeBetter: savingsAmount > 0,
+        };
+      }, [ripeConversion, legacyConversion]);
 
-                  <div className="text-center sm:text-right flex-1">
-                    <p className={`text-xs sm:text-sm ${mutedTextClass} mb-1`}>
-                      Recipient gets
-                    </p>
-                    <p className="text-2xl sm:text-3xl font-bold text-green-600 tabular-nums font-mono">
-                      {formatCurrency(
-                        direction === "receive"
-                          ? amount
-                          : ripeConversion.netFiatReceived,
-                        currency
-                      )}
-                    </p>
-                  </div>
-                </div>
+      const handleAmountChange = useCallback((e) => {
+        const value = e.target.value;
+        setInputValue(value);
+        const validation = validateAmount(value);
+        setInputError(validation.error);
+        if (validation.isValid) {
+          setAmount(validation.value);
+        }
+      }, []);
 
-                <div
-                  className={`mt-4 pt-4 border-t ${borderClass} text-center`}
-                >
-                  <p className={`text-xs sm:text-sm ${mutedTextClass}`}>
-                    Effective rate:{" "}
-                    <span className="font-bold text-base">
-                      {formatCurrency(ripeConversion.effectiveRate, currency)}
-                    </span>{" "}
-                    per {stablecoin}
-                    <span className={`ml-2 text-xs ${mutedTextClass}`}>
-                      (vs interbank{" "}
-                      {formatCurrency(currencyConfig.interbank, currency)})
-                    </span>
-                  </p>
-                </div>
-              </div>
-            )}
+      const handlePresetClick = useCallback((presetAmount) => {
+        setAmount(presetAmount);
+        setInputValue(presetAmount.toString());
+        setInputError(null);
+      }, []);
 
-            {/* Fee Breakdown */}
-            {amount > 0 && ripeConversion && !inputError && (
-              <div className="mt-6">
-                <h3 className="text-base sm:text-lg font-bold mb-3 flex items-center gap-2">
-                  <Shield className="w-4 h-4" style={{ color: "#00d4aa" }} />
-                  Transparent Fee Breakdown
-                </h3>
-                <div
-                  className={`p-4 rounded-xl ${cardBgClass} border ${borderClass}`}
-                >
-                  <FeeLineItem
-                    label={`Gross amount at ${currencyConfig.symbol}${currencyConfig.customer}`}
-                    value={formatCurrency(ripeConversion.grossFiat, currency)}
-                    mutedTextClass={mutedTextClass}
-                  />
+      const handleCurrencyChange = useCallback((newCurrency) => {
+        setCurrency(newCurrency);
+      }, []);
 
-                  <FeeLineItem
-                    label={`Ripe transaction fee (${FEES.transactionFeePercent}%)`}
-                    hint={
-                      ripeConversion.transactionFee === FEES.minimumFee
-                        ? "Min fee applied"
-                        : null
-                    }
-                    value={formatCurrency(
-                      ripeConversion.transactionFeeInFiat,
-                      currency
-                    )}
-                    isDeduction
-                    mutedTextClass={mutedTextClass}
-                  />
+      const handleStablecoinChange = useCallback((newStablecoin) => {
+        setStablecoin(newStablecoin);
+      }, []);
 
-                  <FeeLineItem
-                    label="Network fee"
-                    hint={`$${FEES.networkFeeUSD} flat`}
-                    value={formatCurrency(ripeConversion.networkFee, currency)}
-                    isDeduction
-                    mutedTextClass={mutedTextClass}
-                  />
+      const handleDirectionToggle = useCallback(
+        (newDirection) => {
+          setDirection(newDirection);
+          if (newDirection === "receive" && amount > 0 && ripeConversion) {
+            const fiatEquivalent = Math.round(ripeConversion.netFiatReceived);
+            setAmount(fiatEquivalent);
+            setInputValue(fiatEquivalent.toString());
+          } else if (
+            newDirection === "send" &&
+            amount > 0 &&
+            ripeConversion?.requiredUSDC
+          ) {
+            const usdcEquivalent = ripeConversion.requiredUSDC;
+            setAmount(usdcEquivalent);
+            setInputValue(usdcEquivalent.toString());
+          }
+        },
+        [amount, ripeConversion]
+      );
 
-                  <div
-                    className={`flex justify-between items-center py-1 ${mutedTextClass}`}
-                  >
-                    <span className="flex items-center gap-1">
-                      FX spread ({ripeConversion.fxSpreadPercent.toFixed(2)}%)
-                      <span className="text-xs">(built into rate)</span>
-                    </span>
-                    <span className="text-xs font-medium text-green-600">
-                      Transparent
-                    </span>
-                  </div>
+      const toggleTheme = useCallback(() => {
+        const newTheme = theme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+        if (onThemeChange) {
+          onThemeChange(newTheme);
+        }
+      }, [theme, onThemeChange]);
 
-                  <div className={`border-t-2 ${borderClass} my-3`}></div>
+      const toggleDetails = useCallback(() => {
+        setShowDetails((prev) => !prev);
+      }, []);
 
-                  <FeeLineItem
-                    label="Net amount received"
-                    value={formatCurrency(
-                      ripeConversion.netFiatReceived,
-                      currency
-                    )}
-                    isTotal
-                    mutedTextClass={mutedTextClass}
-                  />
+      const toggleFees = useCallback(() => {
+        setShowFees((prev) => !prev);
+      }, []);
 
-                  <p className={`text-xs ${mutedTextClass} mt-2 text-right`}>
-                    Total fees:{" "}
-                    {formatCurrency(ripeConversion.totalFeesInFiat, currency)} (
-                    {ripeConversion.totalFeesPercent.toFixed(2)}%)
-                  </p>
-                </div>
-              </div>
-            )}
+      const toggleCompare = useCallback(() => {
+        setShowCompare((prev) => !prev);
+      }, []);
 
-            {/* Comparison View */}
-            {amount > 0 &&
-              showComparison &&
-              ripeConversion &&
-              legacyConversion &&
-              savings &&
-              !inputError && (
-                <div className="mt-6">
-                  <h3 className="text-base sm:text-lg font-bold mb-3">
-                    Compare & Save
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div
-                      className={`p-4 rounded-xl border-2 ${borderClass} ${cardBgClass} opacity-75`}
-                    >
-                      <div className="flex justify-between text-center mb-3">
-                        <p
-                          className={`text-sm ${mutedTextClass} flex items-center justify-center gap-1`}
-                        >
-                          Traditional Bank
-                        </p>
-                        <p className="text-sm font-bold text-red-600 tabular-nums font-mono">
-                          {formatCurrency(
-                            legacyConversion.netFiatReceived,
-                            currency
-                          )}
-                        </p>
-                      </div>
-                      <div className={`text-xs ${mutedTextClass} space-y-1`}>
-                        <div className="flex justify-between">
-                          <span>Transaction fee</span>
-                          <span className="text-red-500">3.0%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Network fee</span>
-                          <span className="text-red-500">$5.00</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Hidden FX spread</span>
-                          <span className="text-red-500">~2.5%</span>
-                        </div>
-                      </div>
-                    </div>
+      useEffect(() => {
 
-                    <div
-                      className="p-4 rounded-xl relative overflow-hidden"
-                      style={{
-                        background: isDark
-                          ? "linear-gradient(135deg, rgba(0,212,170,0.15) 0%, rgba(124,58,237,0.15) 100%)"
-                          : "linear-gradient(135deg, rgba(0,212,170,0.1) 0%, rgba(124,58,237,0.1) 100%)",
-                        border: "2px solid #00d4aa",
-                      }}
-                    >
-                      <div className="flex justify-between text-center mb-3">
-                        <p
-                          className="text-sm flex items-center justify-center gap-1"
-                          style={{ color: "#00d4aa" }}
-                        >
-                          Ripe
-                        </p>
-                        <p
-                          className="text-sm font-bold tabular-nums font-mono"
-                          style={{ color: "#00d4aa" }}
-                        >
-                          {formatCurrency(
-                            ripeConversion.netFiatReceived,
-                            currency
-                          )}
-                        </p>
-                      </div>
-                      <div
-                        className={`text-xs space-y-1 ${
-                          isDark ? "text-gray-300" : "text-gray-600"
-                        }`}
-                      >
-                        <div className="flex justify-between">
-                          <span>Transaction fee</span>
-                          <span className="font-semibold">0.5%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Network fee</span>
-                          <span className="font-semibold">$2.00</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>FX spread</span>
-                          <span className="font-semibold">~0.85%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+        if (ripeConversion && onConversionComplete) {
+          onConversionComplete({
+            ...ripeConversion,
+            direction,
+            currency,
+            stablecoin,
+            inputAmount: amount,
+          });
+        }
+      }, [
+        ripeConversion,
+        onConversionComplete,
+        direction,
+        currency,
+        stablecoin,
+        amount,
+      ]);
 
-                  {savings.ripeBetter && (
-                    <div
-                      className="mt-4 p-4 rounded-xl"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, rgba(0,212,170,0.2) 0%, rgba(124,58,237,0.2) 100%)",
-                        border: "1px solid rgba(0,212,170,0.4)",
-                      }}
-                    >
-                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
-                        <TrendingDown
-                          className="w-5 h-5 flex-shrink-0"
-                          style={{ color: "#00d4aa" }}
-                        />
-                        <p
-                          className={`font-bold ${
-                            isDark ? "text-white" : "text-gray-800"
-                          }`}
-                        >
-                          You receive{" "}
-                          <span style={{ color: "#00d4aa" }}>
-                            {formatCurrency(savings.amount, currency)}
-                          </span>{" "}
-                          more with Ripe
-                          <span className="ml-2 text-sm font-normal">
-                            ({savings.percent.toFixed(1)}% better)
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+      const isDark = theme === "dark";
+      const bgClass = isDark ? "bg-gray-900" : "bg-white";
+      const textClass = isDark ? "text-white" : "text-gray-900";
+      const mutedTextClass = isDark ? "text-gray-400" : "text-gray-600";
+      const borderClass = isDark ? "border-gray-700" : "border-gray-200";
+      const cardBgClass = isDark ? "bg-gray-800" : "bg-gray-50";
+      const inputBgClass = isDark
+        ? "bg-gray-800 border-gray-600"
+        : "bg-white border-gray-300";
+      const focusRingClass = isDark
+        ? "focus:ring-offset-gray-900"
+        : "focus:ring-offset-white";
+      const currencyConfig = FX_RATES[currency];
+      const stablecoinConfig = STABLECOINS[stablecoin];
+      const inputLabel =
+        direction === "send"
+          ? `You send (${stablecoin})`
+          : `Recipient gets (${currency})`;
+      const inputSuffix = direction === "send" ? stablecoin : currency;
 
-            {/* Detailed Math Expander */}
-            {amount > 0 && ripeConversion && !inputError && (
-              <div className="mt-6">
-                <button
-                  type="button"
-                  onClick={toggleDetails}
-                  className={`flex items-center gap-2 text-sm font-semibold ${mutedTextClass} hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-2 -ml-2`}
-                  aria-expanded={showDetails}
-                >
-                  {showDetails ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                  {showDetails ? "Hide" : "Show"} detailed calculation
-                </button>
-
-                {showDetails && (
-                  <div
-                    className={`mt-3 p-4 rounded-xl ${cardBgClass} border ${borderClass} text-sm space-y-4`}
-                  >
-                    <div>
-                      <p className="font-semibold mb-1">
-                        Step 1: Apply customer FX rate
-                      </p>
-                      <p
-                        className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
-                      >
-                        {formatUSDC(
-                          direction === "receive"
-                            ? ripeConversion.requiredUSDC
-                            : amount
-                        )}{" "}
-                        USDC × {currencyConfig.customer} ={" "}
-                        {formatCurrency(ripeConversion.grossFiat, currency)}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold mb-1">
-                        Step 2: Calculate transaction fee
-                      </p>
-                      <p
-                        className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
-                      >
-                        {formatUSDC(
-                          direction === "receive"
-                            ? ripeConversion.requiredUSDC
-                            : amount
-                        )}{" "}
-                        USDC × {FEES.transactionFeePercent}% ={" "}
-                        {formatUSDC(ripeConversion.transactionFee)} USDC
-                      </p>
-                      <p
-                        className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
-                      >
-                        →{" "}
-                        {formatCurrency(
-                          ripeConversion.transactionFeeInFiat,
-                          currency
-                        )}{" "}
-                        in {currency}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold mb-1">
-                        Step 3: Add network fee
-                      </p>
-                      <p
-                        className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
-                      >
-                        ${FEES.networkFeeUSD} × {currencyConfig.customer} ={" "}
-                        {formatCurrency(ripeConversion.networkFee, currency)}
-                      </p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold mb-1">
-                        Step 4: Calculate net amount
-                      </p>
-                      <p
-                        className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
-                      >
-                        {formatCurrency(ripeConversion.grossFiat, currency)} −{" "}
-                        {formatCurrency(
-                          ripeConversion.transactionFeeInFiat,
-                          currency
-                        )}{" "}
-                        − {formatCurrency(ripeConversion.networkFee, currency)}{" "}
-                        ={" "}
-                        {formatCurrency(
-                          ripeConversion.netFiatReceived,
-                          currency
-                        )}
-                      </p>
-                    </div>
-
-                    <div className={`pt-3 border-t ${borderClass}`}>
-                      <p className="font-semibold" style={{ color: "#00d4aa" }}>
-                        ✓ Effective rate: 1 USDC ={" "}
-                        {formatCurrency(ripeConversion.effectiveRate, currency)}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Zero Amount Message */}
-            {(amount === 0 || !amount) && !inputError && (
-              <div
-                className={`mt-6 p-8 rounded-xl ${cardBgClass} border ${borderClass} text-center`}
-              >
-                <Info className={`w-12 h-12 mx-auto mb-3 ${mutedTextClass}`} />
-                <p className={mutedTextClass}>
-                  Enter an amount to see conversion details
-                </p>
-              </div>
-            )}
-
-            {/* Footer / Trust Signals */}
-            <div className={`mt-6 pt-6 border-t ${borderClass}`}>
-              <div className="flex flex-wrap justify-center gap-4 text-xs">
-                <span className={`flex items-center gap-1 ${mutedTextClass}`}>
-                  <Shield className="w-3 h-3" style={{ color: "#00d4aa" }} />
-                  All fees shown upfront
-                </span>
-                <span className={`flex items-center gap-1 ${mutedTextClass}`}>
-                  <Check className="w-3 h-3" style={{ color: "#00d4aa" }} />
-                  No hidden charges
-                </span>
-                <span className={`flex items-center gap-1 ${mutedTextClass}`}>
-                  <Zap className="w-3 h-3" style={{ color: "#7c3aed" }} />
-                  Instant settlement
-                </span>
-              </div>
-
-              {/* Supported Stablecoins */}
-              <div className="flex justify-center gap-3 mt-4">
+      return (
+        <main
+          className={`p-4 sm:p-6 ${bgClass} ${textClass} transition-colors duration-200 border ${borderClass}`}
+          role="region"
+          aria-label="FX Conversion Calculator"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
                 <span
-                  className={`px-2 py-1 rounded text-xs font-medium ${
-                    isDark
-                      ? "bg-gray-800 text-gray-300"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
+                  className="p-1.5 rounded-lg flex items-center justify-center"
+                  style={{
+                    background: "linear-gradient(135deg, #00d4aa, #7c3aed)",
+                  }}
                 >
-                  USDC
+                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </span>
                 <span
-                  className={`px-2 py-1 rounded text-xs font-medium ${
-                    isDark
-                      ? "bg-gray-800 text-gray-300"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  USDT
-                </span>
-                <span
-                  className={`px-2 py-1 rounded text-xs font-medium ${
-                    isDark
-                      ? "bg-gray-800 text-gray-300"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  USDG
-                </span>
-              </div>
-
-              <p className={`text-center text-xs ${mutedTextClass} mt-3`}>
-                Powered by{" "}
-                <span
-                  className="font-extrabold"
+                  className="text-xl sm:text-2xl font-extrabold tracking-tight"
                   style={{
                     background: "linear-gradient(90deg, #00d4aa, #7c3aed)",
                     WebkitBackgroundClip: "text",
@@ -1800,86 +1154,763 @@
                   }}
                 >
                   ripe
-                </span>{" "}
-                — From stablecoin to e-wallet
+                </span>
+                <span
+                  className={`text-lg sm:text-xl font-semibold ${mutedTextClass}`}
+                >
+                  FX
+                </span>
+              </div>
+              <p className={`text-xs sm:text-sm ${mutedTextClass}`}>
+                From stablecoin to e-wallet — instant settlement
               </p>
-            </div>
-          </main>
-        );
-      };
-
-      // ============================================================================
-      // RENDER APPLICATION
-      // ============================================================================
-
-      const App = () => {
-        const [theme, setTheme] = React.useState("dark");
-        
-        const handleConversionComplete = (result) => {
-          console.log("Conversion result:", result);
-        };
-
-        const handleThemeChange = (newTheme) => {
-          setTheme(newTheme);
-        };
-
-        return (
-          <>
-            <FXWidget
-              defaultCurrency="PHP"
-              defaultAmount={100}
-              defaultStablecoin="USDC"
-              theme={theme}
-              onThemeChange={handleThemeChange}
-              showComparison={true}
-              showDirectionToggle={true}
-              showStablecoinSelector={true}
-              brandColor="#00d4aa"
-              onConversionComplete={handleConversionComplete}
-            />
-            <div style={{
-              textAlign: "center",
-              padding: "16px",
-              backgroundColor: theme === "dark" ? "#111827" : "#f9fafb"
-            }}>
-              <p style={{
-                color: theme === "dark" ? "#6b7280" : "#4b5563",
-                fontSize: "12px",
-                marginBottom: "12px"
-              }}>
-                Trusted by leading wallets and issuers
-              </p>
-              <div style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "24px",
-                flexWrap: "wrap",
-                opacity: 0.6
-              }}>
-                <span style={{
-                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
-                  fontWeight: 500
-                }}>Phantom</span>
-                <span style={{
-                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
-                  fontWeight: 500
-                }}>MetaMask</span>
-                <span style={{
-                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
-                  fontWeight: 500
-                }}>Tether</span>
-                <span style={{
-                  color: theme === "dark" ? "#a5b4fc" : "#6366f1",
-                  fontWeight: 500
-                }}>Solana</span>
+              {/* Live Rate Status Indicator */}
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <div
+                  className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${ratesLoading
+                      ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                      : ratesError
+                        ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                        : isStale
+                          ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                          : "bg-green-100 text-green-700 bg-gray-100 dark:text-green-400"
+                    }`}
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full ${ratesLoading
+                        ? "bg-yellow-500 animate-pulse"
+                        : ratesError
+                          ? "bg-red-500"
+                          : isStale
+                            ? "bg-orange-500"
+                            : "bg-green-500"
+                      }`}
+                  ></span>
+                  {ratesLoading
+                    ? "Updating..."
+                    : ratesError
+                      ? "Cached"
+                      : isStale
+                        ? "Stale"
+                        : " Live"}
+                </div>
+                {/* Source badge */}
+                {!ratesLoading && !ratesError && (
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-100"
+                      } ${mutedTextClass}`}
+                  >
+                    {ratesSource === "coingecko"
+                      ? "🦎 CoinGecko"
+                      : ratesSource === "exchangerate-api"
+                        ? "💱 ExchangeRate"
+                        : ratesSource === "open-er-api"
+                          ? "🌐 OpenER"
+                          : ratesSource === "frankfurter"
+                            ? "🇪🇺 Frankfurter"
+                            : "📦 Cached"}
+                  </span>
+                )}
+                <span className={`text-xs ${mutedTextClass}`}>
+                  {lastUpdatedText}
+                </span>
+                {!ratesLoading && (
+                  <button
+                    onClick={refreshRates}
+                    className={`p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${mutedTextClass}`}
+                    title="Refresh rates"
+                    aria-label="Refresh exchange rates"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                  </button>
+                )}
               </div>
             </div>
-          </>
-        );
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={`p-2.5 rounded-xl ${cardBgClass} hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-blue-500 ${focusRingClass} min-w-[44px] min-h-[44px] flex items-center justify-center ${isDark ? 'text-white' : ''}`}
+              aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+            >
+              {isDark ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+
+          {/* Input Section */}
+          <div className="space-y-5">
+            {showDirectionToggle && (
+              <DirectionToggle
+                direction={direction}
+                onToggle={handleDirectionToggle}
+                isDark={isDark}
+              />
+            )}
+
+            {/* Stablecoin Selector */}
+            {showStablecoinSelector && direction === "send" && (
+              <div>
+                <label
+                  className={`block text-sm font-semibold ${mutedTextClass} mb-2`}
+                >
+                  Select stablecoin
+
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(STABLECOINS).map(([code, config]) => (
+                    <StablecoinButton
+                      key={code}
+                      code={code}
+                      config={config}
+                      isSelected={stablecoin === code}
+                      onClick={() => handleStablecoinChange(code)}
+                      isDark={isDark}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label
+                htmlFor="fx-amount-input"
+                className={`block text-sm font-semibold ${mutedTextClass} mb-2`}
+              >
+                {inputLabel}
+              </label>
+              <div className="relative">
+                <input
+                  id="fx-amount-input"
+                  type="text"
+                  inputMode="decimal"
+                  pattern="[0-9]*\.?[0-9]*"
+                  value={inputValue}
+                  onChange={handleAmountChange}
+                  placeholder="Enter amount"
+                  aria-describedby={
+                    inputError ? "fx-amount-error" : undefined
+                  }
+                  aria-invalid={!!inputError}
+                  className={`w-full text-2xl sm:text-3xl font-bold px-4 py-3 pr-20 rounded-xl border-2 ${inputBgClass} ${textClass} focus:outline-none focus:ring-2 focus:ring-blue-500 ${focusRingClass} transition-all tabular-nums font-mono ${inputError ? "border-red-500" : ""
+                    }`}
+                />
+                <span
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 text-base sm:text-lg font-semibold ${mutedTextClass} pointer-events-none`}
+                >
+                  {inputSuffix}
+                </span>
+              </div>
+              {inputError && (
+                <p
+                  id="fx-amount-error"
+                  className="mt-2 text-sm text-red-500 flex items-center gap-1"
+                  role="alert"
+                >
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {inputError}
+                </p>
+              )}
+            </div>
+
+            {direction === "send" && (
+              <div
+                className="flex flex-wrap gap-2"
+                role="group"
+                aria-label="Preset amounts"
+              >
+                {PRESET_AMOUNTS.map((preset) => (
+                  <PresetButton
+                    key={preset}
+                    amount={preset}
+                    isSelected={amount === preset && !inputError}
+                    onClick={() => handlePresetClick(preset)}
+                    isDark={isDark}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div>
+              <label
+                className={`block text-sm font-semibold ${mutedTextClass} mb-2`}
+              >
+                {direction === "send" ? "Convert to" : "Currency"}
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {Object.entries(FX_RATES).map(([code, config]) => (
+                  <CurrencyButton
+                    key={code}
+                    code={code}
+                    config={config}
+                    isSelected={currency === code}
+                    onClick={() => handleCurrencyChange(code)}
+                    isDark={isDark}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Results Card */}
+          {amount > 0 && ripeConversion && !inputError && (
+            <div
+              className={`mt-6 p-5 sm:p-6 rounded-2xl transition-all relative overflow-hidden`}
+              style={{
+                background: isDark
+                  ? "linear-gradient(135deg, rgba(0,212,170,0.1) 0%, rgba(124,58,237,0.1) 100%)"
+                  : "linear-gradient(135deg, rgba(0,212,170,0.05) 0%, rgba(124,58,237,0.05) 100%)",
+                border: "2px solid",
+                borderImage: "linear-gradient(135deg, #00d4aa, #7c3aed) 1",
+              }}
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left flex-1">
+                  <p className={`text-md font-bold sm:text-sm mb-1 ${isDark ? "text-white" : "text-black"}`}>
+                    YOU SEND
+                  </p>
+                  <p
+                    className="text-2xl sm:text-3xl font-bold tabular-nums font-mono"
+                    style={{ color: stablecoinConfig?.color || "#00d4aa" }}
+                  >
+                    {formatUSDC(
+                      direction === "receive"
+                        ? ripeConversion.requiredUSDC
+                        : amount
+                    )}{" "}
+                    {stablecoin}
+                  </p>
+                </div>
+
+                <div className="flex-shrink-0">
+                  <div
+                    className={`p-2 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-200"
+                      }`}
+                  >
+                    <ArrowRight
+                      className={`w-6 h-6 ${mutedTextClass} transform sm:rotate-0 rotate-90`}
+                    />
+                  </div>
+                </div>
+
+                <div className="text-center sm:text-right flex-1">
+                  <p className={`text-md font-bold sm:text-sm mb-1 ${isDark ? "text-white" : "text-black"}`}>
+                    RECIPIENT GETS
+                  </p>
+                  <p className="text-2xl sm:text-3xl font-bold text-green-600 tabular-nums font-mono">
+                    {formatCurrency(
+                      direction === "receive"
+                        ? amount
+                        : ripeConversion.netFiatReceived,
+                      currency
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                className={`mt-4 pt-4 border-t ${borderClass} text-center`}
+              >
+                <p className={`text-xs sm:text-sm ${mutedTextClass}`}>
+                  Effective rate:{" "}
+                  <span className="font-bold text-base">
+                    {formatCurrency(ripeConversion.effectiveRate, currency)}
+                  </span>{" "}
+                  per {stablecoin}
+                  <span className={`ml-2 text-xs ${mutedTextClass}`}>
+                    (vs interbank{" "}
+                    {formatCurrency(currencyConfig.interbank, currency)})
+                  </span>
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Fee Breakdown - Collapsible */}
+          {amount > 0 && ripeConversion && !inputError && (
+            <div className="mt-6">
+              <button
+                onClick={toggleFees}
+                className={`w-full flex items-center justify-between p-3 rounded-xl ${cardBgClass} border ${borderClass} transition-all duration-200 hover:opacity-80`}
+              >
+                <span className={`text-base sm:text-lg font-bold flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+                  <Shield className="w-4 h-4" style={{ color: "#00d4aa" }} />
+                  Fee Breakdown
+                </span>
+                <ChevronDown
+                  className={`w-5 h-5 transition-transform duration-200 ${showFees ? "rotate-180" : ""}`}
+                />
+              </button>
+              {showFees && (
+              <div
+                className={`mt-2 p-4 rounded-xl ${cardBgClass} border ${borderClass}`}
+              >
+                <FeeLineItem
+                  label={`Gross amount at ${currencyConfig.symbol}${currencyConfig.customer}`}
+                  value={formatCurrency(ripeConversion.grossFiat, currency)}
+                  mutedTextClass={mutedTextClass}
+                />
+
+                <FeeLineItem
+                  label={`Ripe transaction fee (${FEES.transactionFeePercent}%)`}
+                  hint={
+                    ripeConversion.transactionFee === FEES.minimumFee
+                      ? "Min fee applied"
+                      : null
+                  }
+                  value={formatCurrency(
+                    ripeConversion.transactionFeeInFiat,
+                    currency
+                  )}
+                  isDeduction
+                  mutedTextClass={mutedTextClass}
+                />
+
+                <FeeLineItem
+                  label="Network fee"
+                  hint={`$${FEES.networkFeeUSD} flat`}
+                  value={formatCurrency(ripeConversion.networkFee, currency)}
+                  isDeduction
+                  mutedTextClass={mutedTextClass}
+                />
+
+                <div
+                  className={`flex justify-between items-center py-1 ${mutedTextClass}`}
+                >
+                  <span className="flex items-center gap-1">
+                    FX spread ({ripeConversion.fxSpreadPercent.toFixed(2)}%)
+                    <span className="text-xs">(built into rate)</span>
+                  </span>
+                  <span className="text-xs font-medium text-green-600">
+                    Transparent
+                  </span>
+                </div>
+
+                <div className={`border-t-2 ${borderClass} my-3`}></div>
+
+                <FeeLineItem
+                  label="Net amount received"
+                  value={formatCurrency(
+                    ripeConversion.netFiatReceived,
+                    currency
+                  )}
+                  isTotal
+                  mutedTextClass={mutedTextClass}
+                />
+
+                <p className={`text-xs ${mutedTextClass} mt-2 text-right`}>
+                  Total fees:{" "}
+                  {formatCurrency(ripeConversion.totalFeesInFiat, currency)} (
+                  {ripeConversion.totalFeesPercent.toFixed(2)}%)
+                </p>
+              </div>
+              )}
+            </div>
+          )}
+
+          {/* Comparison View - Collapsible */}
+          {amount > 0 &&
+            ripeConversion &&
+            legacyConversion &&
+            savings &&
+            !inputError && (
+              <div className="mt-6">
+                <button
+                  onClick={toggleCompare}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl ${cardBgClass} border ${borderClass} transition-all duration-200 hover:opacity-80`}
+                >
+                  <span className={`text-base sm:text-lg font-bold flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+                    <TrendingUp className="w-4 h-4" style={{ color: "#00d4aa" }} />
+                    Compare & Save
+                    {savings.percent > 0 && (
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "rgba(0,212,170,0.2)", color: "#00d4aa" }}>
+                        Save {savings.percent.toFixed(1)}%
+                      </span>
+                    )}
+                  </span>
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-200 ${showCompare ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {showCompare && (
+                <>
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div
+                    className={`p-4 rounded-xl border-2 ${borderClass} ${cardBgClass} opacity-75`}
+                  >
+                    <div className="flex justify-between text-center mb-3">
+                      <p
+                        className={`text-md ${mutedTextClass} flex items-center justify-center gap-1`}
+                      >
+                        Traditional Bank
+                      </p>
+                      <p className="text-md font-bold text-red-600 tabular-nums font-mono">
+                        {formatCurrency(
+                          legacyConversion.netFiatReceived,
+                          currency
+                        )}
+                      </p>
+                    </div>
+                    <div className={`text-sm ${mutedTextClass} space-y-1`}>
+                      <div className="flex justify-between">
+                        <span>Transaction fee</span>
+                        <span className="text-red-500">3.0%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Network fee</span>
+                        <span className="text-red-500">$5.00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Hidden FX spread</span>
+                        <span className="text-red-500">~2.5%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="p-4 rounded-xl relative overflow-hidden"
+                    style={{
+                      background: isDark
+                        ? "linear-gradient(135deg, rgba(0,212,170,0.15) 0%, rgba(124,58,237,0.15) 100%)"
+                        : "linear-gradient(135deg, rgba(0,212,170,0.1) 0%, rgba(124,58,237,0.1) 100%)",
+                      border: "2px solid #00d4aa",
+                    }}
+                  >
+                    <div className="flex justify-between text-center mb-3">
+                      <p
+                        className="text-md flex items-center justify-center gap-1"
+                        style={{ color: "#00d4aa" }}
+                      >
+                        Ripe
+                      </p>
+                      <p
+                        className="text-md font-bold tabular-nums font-mono"
+                        style={{ color: "#00d4aa" }}
+                      >
+                        {formatCurrency(
+                          ripeConversion.netFiatReceived,
+                          currency
+                        )}
+                      </p>
+                    </div>
+                    <div
+                      className={`text-sm space-y-1 ${isDark ? "text-gray-300" : "text-gray-600"
+                        }`}
+                    >
+                      <div className="flex justify-between">
+                        <span>Transaction fee</span>
+                        <span className="font-semibold">0.5%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Network fee</span>
+                        <span className="font-semibold">$2.00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>FX spread</span>
+                        <span className="font-semibold">~0.85%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {savings.ripeBetter && (
+                  <div
+                    className="mt-4 p-4 rounded-xl"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(0,212,170,0.2) 0%, rgba(124,58,237,0.2) 100%)",
+                      border: "1px solid rgba(0,212,170,0.4)",
+                    }}
+                  >
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-1 text-center">
+                      <p
+                        className={`font-bold ${isDark ? "text-white" : "text-gray-800"
+                          }`}
+                      >
+                        You receive{" "}
+                        <span style={{ color: "#00d4aa" }}>
+                          {formatCurrency(savings.amount, currency)}
+                        </span>{" "}
+                        more with Ripe
+                        <span className="ml-2 text-sm font-normal">
+                          ({savings.percent.toFixed(1)}% better)
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+                </>
+                )}
+              </div>
+            )}
+
+          {/* Detailed Math Expander */}
+          {amount > 0 && ripeConversion && !inputError && (
+            <div className="mt-6">
+              <button
+                type="button"
+                onClick={toggleDetails}
+                className={`flex items-center gap-2 text-sm font-semibold ${mutedTextClass} hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-2 -ml-2`}
+                aria-expanded={showDetails}
+              >
+                {showDetails ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+                {showDetails ? "Hide" : "Show"} detailed calculation
+              </button>
+
+              {showDetails && (
+                <div
+                  className={`mt-3 p-4 rounded-xl ${cardBgClass} border ${borderClass} text-sm space-y-4`}
+                >
+                  <div>
+                    <p className="font-semibold mb-1">
+                      Step 1: Apply customer FX rate
+                    </p>
+                    <p
+                      className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
+                    >
+                      {formatUSDC(
+                        direction === "receive"
+                          ? ripeConversion.requiredUSDC
+                          : amount
+                      )}{" "}
+                      USDC × {currencyConfig.customer} ={" "}
+                      {formatCurrency(ripeConversion.grossFiat, currency)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold mb-1">
+                      Step 2: Calculate transaction fee
+                    </p>
+                    <p
+                      className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
+                    >
+                      {formatUSDC(
+                        direction === "receive"
+                          ? ripeConversion.requiredUSDC
+                          : amount
+                      )}{" "}
+                      USDC × {FEES.transactionFeePercent}% ={" "}
+                      {formatUSDC(ripeConversion.transactionFee)} USDC
+                    </p>
+                    <p
+                      className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
+                    >
+                      →{" "}
+                      {formatCurrency(
+                        ripeConversion.transactionFeeInFiat,
+                        currency
+                      )}{" "}
+                      in {currency}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold mb-1">
+                      Step 3: Add network fee
+                    </p>
+                    <p
+                      className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
+                    >
+                      ${FEES.networkFeeUSD} × {currencyConfig.customer} ={" "}
+                      {formatCurrency(ripeConversion.networkFee, currency)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold mb-1">
+                      Step 4: Calculate net amount
+                    </p>
+                    <p
+                      className={`${mutedTextClass} font-mono text-xs sm:text-sm`}
+                    >
+                      {formatCurrency(ripeConversion.grossFiat, currency)} −{" "}
+                      {formatCurrency(
+                        ripeConversion.transactionFeeInFiat,
+                        currency
+                      )}{" "}
+                      − {formatCurrency(ripeConversion.networkFee, currency)}{" "}
+                      ={" "}
+                      {formatCurrency(
+                        ripeConversion.netFiatReceived,
+                        currency
+                      )}
+                    </p>
+                  </div>
+
+                  <div className={`pt-3 border-t ${borderClass}`}>
+                    <p className="font-semibold" style={{ color: "#00d4aa" }}>
+                      ✓ Effective rate: 1 USDC ={" "}
+                      {formatCurrency(ripeConversion.effectiveRate, currency)}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Zero Amount Message */}
+          {(amount === 0 || !amount) && !inputError && (
+            <div
+              className={`mt-6 p-8 rounded-xl ${cardBgClass} border ${borderClass} text-center`}
+            >
+              <Info className={`w-12 h-12 mx-auto mb-3 ${mutedTextClass}`} />
+              <p className={mutedTextClass}>
+                Enter an amount to see conversion details
+              </p>
+            </div>
+          )}
+
+          {/* Footer / Trust Signals */}
+          <div className={`mt-6 pt-6 border-t ${borderClass}`}>
+            <div className="flex flex-wrap justify-center gap-4 text-xs">
+              <span className={`flex items-center gap-1 ${mutedTextClass}`}>
+                <Shield className="w-3 h-3" style={{ color: "#00d4aa" }} />
+                All fees shown upfront
+              </span>
+              <span className={`flex items-center gap-1 ${mutedTextClass}`}>
+                <Check className="w-3 h-3" style={{ color: "#00d4aa" }} />
+                No hidden charges
+              </span>
+              <span className={`flex items-center gap-1 ${mutedTextClass}`}>
+                <Zap className="w-3 h-3" style={{ color: "#7c3aed" }} />
+                Instant settlement
+              </span>
+            </div>
+
+            {/* Supported Stablecoins */}
+            <div className="flex justify-center gap-3 mt-4">
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${isDark
+                    ? "bg-gray-800 text-gray-300"
+                    : "bg-gray-100 text-gray-600"
+                  }`}
+              >
+                USDC
+              </span>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${isDark
+                    ? "bg-gray-800 text-gray-300"
+                    : "bg-gray-100 text-gray-600"
+                  }`}
+              >
+                USDT
+              </span>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${isDark
+                    ? "bg-gray-800 text-gray-300"
+                    : "bg-gray-100 text-gray-600"
+                  }`}
+              >
+                USDG
+              </span>
+            </div>
+
+            <p className={`text-center text-xs ${mutedTextClass} mt-3`}>
+              Powered by{" "}
+              <span
+                className="font-extrabold"
+                style={{
+                  background: "linear-gradient(90deg, #00d4aa, #7c3aed)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                ripe
+              </span>{" "}
+              — From stablecoin to e-wallet
+            </p>
+          </div>
+        </main>
+      );
+    };
+
+    // ============================================================================
+    // RENDER APPLICATION
+    // ============================================================================
+
+    const App = () => {
+      const [stablecoin, setStablecoin] = useState("USDC");
+      const [theme, setTheme] = React.useState("dark");
+
+      const handleConversionComplete = (result) => {
+        setStablecoin(result.stablecoin);
       };
 
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(<App />);
-    </script>
-  </body>
+      const handleThemeChange = (newTheme) => {
+        setTheme(newTheme);
+      };
+
+      return (
+        <>
+          <FXWidget
+            setStablecoin={setStablecoin}
+            stablecoin={stablecoin}
+            defaultCurrency="PHP"
+            defaultAmount={100}
+            defaultStablecoin="USDC"
+            theme={theme}
+            onThemeChange={handleThemeChange}
+            showComparison={true}
+            showDirectionToggle={true}
+            showStablecoinSelector={true}
+            brandColor="#00d4aa"
+            onConversionComplete={handleConversionComplete}
+          />
+          <div style={{
+            textAlign: "center",
+            padding: "16px",
+            backgroundColor: theme === "dark" ? "#111827" : "#f9fafb"
+          }}>
+            <p style={{
+              color: theme === "dark" ? "#6b7280" : "#4b5563",
+              fontSize: "12px",
+              marginBottom: "12px"
+            }}>
+              Trusted by leading wallets and issuers
+            </p>
+            <div style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "24px",
+              flexWrap: "wrap",
+              opacity: 0.6
+            }}>
+              <span style={{
+                color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                fontWeight: 500
+              }}>Phantom</span>
+              <span style={{
+                color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                fontWeight: 500
+              }}>MetaMask</span>
+              <span style={{
+                color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                fontWeight: 500
+              }}>Tether</span>
+              <span style={{
+                color: theme === "dark" ? "#a5b4fc" : "#6366f1",
+                fontWeight: 500
+              }}>Solana</span>
+            </div>
+          </div>
+        </>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+
 </html>
